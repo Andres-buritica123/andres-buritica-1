@@ -58,11 +58,23 @@ col2.metric("Departamentos", f"{total_departamentos}")
 col3.metric("Municipios", f"{total_municipios}")
 
 # --- Filtros ---
-st.sidebar.header("Filtros")
+st.subheader("Filtros")
 
-años = st.sidebar.multiselect("Selecciona Años", options=sorted(df['AÑO'].dropna().unique()), default=sorted(df['AÑO'].dropna().unique()))
-deptos = st.sidebar.multiselect("Selecciona Departamentos", options=sorted(df['DEPARTAMENTO'].dropna().unique()), default=sorted(df['DEPARTAMENTO'].dropna().unique()))
+fcol1, fcol2 = st.columns(2)
 
+with fcol1:
+    años = st.multiselect(
+        "Selecciona Años", 
+        options=sorted(df['AÑO'].dropna().unique()), 
+        default=sorted(df['AÑO'].dropna().unique())
+    )
+
+with fcol2:
+    deptos = st.multiselect(
+        "Selecciona Departamentos", 
+        options=sorted(df['DEPARTAMENTO'].dropna().unique()), 
+        default=sorted(df['DEPARTAMENTO'].dropna().unique())
+    )
 # --- Aplicar filtros ---
 df_filtrado = df[df['AÑO'].isin(años) & df['DEPARTAMENTO'].isin(deptos)]
 
