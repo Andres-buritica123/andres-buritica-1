@@ -37,7 +37,7 @@ st.markdown("""
 st.header("Solución")
 
 # Cargar datos
-df = pd.read_csv("trata_de_personas.csv")
+df = pd.read_csv("./pages/trata_de_personas.csv")
 
 # --- Limpieza de datos ---
 df.columns = df.columns.str.strip().str.upper()
