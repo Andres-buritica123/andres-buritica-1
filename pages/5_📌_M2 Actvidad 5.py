@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from datetime import datetime
+import requests
 
 # Configuración de la página
 st.set_page_config(   
@@ -93,3 +94,32 @@ st.plotly_chart(fig2)
 # --- Tabla de datos filtrados ---
 st.subheader("Datos Filtrados")
 st.dataframe(df_filtrado.sort_values(by='FECHA HECHO', ascending=False))
+
+
+
+# Usamos una API gratuita en la nube
+url = "https://api-b56e.onrender.com"
+
+try:
+    # Realizamos la solicitud GET
+    response = requests.get(url)
+    response.raise_for_status()
+
+    # Convertimos a JSON
+    data = response.json()
+
+    # Normalizamos los datos para aplanar campos anidados
+    df = pd.json_normalize(data)
+
+    # Mostramos las primeras 5 filas
+    print("Primeras 5 filas del DataFrame:")
+    print(df.head())
+
+    # Guardamos como CSV
+    df.to_csv("usuarios_api.csv", index=False)
+    print("✅ Datos guardados como 'usuarios_api.csv'")
+
+except requests.exceptions.RequestException as e:
+    print(f"❌ Error durante la solicitud: {e}")
+except ValueError as e:
+    print(f"❌ Error al procesar JSON: {e}")
