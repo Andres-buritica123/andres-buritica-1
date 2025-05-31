@@ -8,9 +8,11 @@ from openai import OpenAI
 # Configuración de la página
 st.set_page_config(   
     page_icon="📌",
-    layout="wide"
+    layout="wide",
+    page_title="Chat Básico con ChatGPT",
+    layout="centered"
 )
-
+ 
 st.title("Momento 2 - Actividad 5")
 
 st.header("Descripción de la actividad")
@@ -182,7 +184,6 @@ st.markdown("""
 st.header("Solución")
 
 # Configuración de la página
-st.set_page_config(page_title="Chat Básico con ChatGPT", layout="centered")
 st.title("💬 Chat con ChatGPT")
 st.markdown("Ingresa un tema o pregunta y obtén una respuesta generada por la IA de OpenAI.")
 
