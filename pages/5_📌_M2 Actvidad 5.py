@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 import requests
-from openai import OpenAI
+import openai
 
 # Configuración de la página
 st.set_page_config(page_icon="📌", layout="wide")
