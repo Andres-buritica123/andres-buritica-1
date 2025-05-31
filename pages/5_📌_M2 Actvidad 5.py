@@ -7,9 +7,8 @@ from openai import OpenAI
 
 # Configuración de la página
 st.set_page_config(   
-    page_icon="📌",
-    layout="wide"
     page_title="Chat Básico con ChatGPT",
+    page_icon="📌",
     layout="centered"
 )
  
