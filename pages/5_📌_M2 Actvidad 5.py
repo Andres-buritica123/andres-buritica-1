@@ -99,7 +99,7 @@ st.dataframe(df_filtrado.sort_values(by='FECHA HECHO', ascending=False))
 st.title("📊 Consulta de usuarios desde API en la nube")
 
 # URL de la API
-url = "https://api-b56e.onrender.com/users"
+url = "https://api-b56e.onrender.com"
 
 try:
     # Realizamos la solicitud GET
