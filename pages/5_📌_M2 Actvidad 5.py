@@ -6,12 +6,8 @@ import requests
 from openai import OpenAI
 
 # Configuración de la página
-st.set_page_config(   
-    page_title="Chat Básico con ChatGPT",
-    page_icon="📌",
-    layout="centered"
-)
- 
+st.set_page_config(page_icon="📌", layout="wide")
+
 st.title("Momento 2 - Actividad 5")
 
 st.header("Descripción de la actividad")
