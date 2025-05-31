@@ -95,6 +95,31 @@ st.plotly_chart(fig2)
 st.subheader("Datos Filtrados")
 st.dataframe(df_filtrado.sort_values(by='FECHA HECHO', ascending=False))
 
+st.header("Descripción de la Actividad")
+
+st.markdown("""
+Esta actividad consiste en el desarrollo de una **aplicación web con Streamlit** que consume datos desde una **API REST gratuita en la nube**.  
+El objetivo principal es consultar, visualizar y exportar datos de usuarios, utilizando herramientas del ecosistema Python como:
+
+- `requests` para realizar solicitudes HTTP  
+- `pandas` para el procesamiento de datos en formato JSON  
+- `Streamlit` para construir una interfaz web interactiva  
+
+La app permite mostrar todos los registros obtenidos y descargar los datos como archivo CSV para su análisis posterior.
+""")
+
+st.header("Objetivos de Aprendizaje")
+
+st.markdown("""
+- Comprender cómo consumir una API REST desde Python  
+- Aprender a procesar y normalizar datos JSON usando pandas  
+- Desarrollar interfaces web simples con Streamlit  
+- Mostrar y exportar datos en tablas dinámicas  
+- Aplicar buenas prácticas en el manejo de errores durante solicitudes web  
+""")
+
+st.header("Solución")
+
 st.title("📊 Consulta de usuarios desde API en la nube")
 
 # URL de la API
