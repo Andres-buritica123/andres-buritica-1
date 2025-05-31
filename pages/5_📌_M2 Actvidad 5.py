@@ -136,6 +136,10 @@ try:
         # Normalizamos los datos (por si hay campos anidados)
         df = pd.json_normalize(data)
 
+        # 👉 Mostramos los datos por consola (útil al ejecutar localmente)
+        print("✅ Datos obtenidos desde la API:")
+        print(df)
+
         # Mostramos todos los datos en una tabla
         st.subheader("✅ Todos los usuarios recibidos:")
         st.dataframe(df, use_container_width=True)
