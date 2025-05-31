@@ -99,36 +99,41 @@ st.dataframe(df_filtrado.sort_values(by='FECHA HECHO', ascending=False))
 st.title("📊 Consulta de usuarios desde API en la nube")
 
 # URL de la API
-url = "https://api-b56e.onrender.com"
+url = "https://api-b56e.onrender.com/users"
 
 try:
     # Realizamos la solicitud GET
     response = requests.get(url)
     response.raise_for_status()
 
-    # Convertimos la respuesta a JSON
-    data = response.json()
+    # Verificamos si la respuesta contiene datos
+    if response.text.strip():
+        # Convertimos la respuesta a JSON
+        data = response.json()
 
-    if data:
-        # Normalizamos los datos anidados
-        df = pd.json_normalize(data)
+        # Verificamos si los datos están vacíos
+        if data:
+            # Normalizamos los datos anidados
+            df = pd.json_normalize(data)
 
-        # Mostramos el DataFrame en Streamlit
-        st.subheader("✅ Datos recibidos de la API")
-        st.dataframe(df.head())  # Muestra las primeras filas
+            # Mostramos el DataFrame en Streamlit
+            st.subheader("✅ Datos recibidos de la API")
+            st.dataframe(df.head())  # Muestra las primeras filas
 
-        # Botón para descargar CSV
-        csv = df.to_csv(index=False, encoding='utf-8-sig')
-        st.download_button(
-            label="📥 Descargar CSV",
-            data=csv,
-            file_name='usuarios_api.csv',
-            mime='text/csv'
-        )
+            # Botón para descargar CSV
+            csv = df.to_csv(index=False, encoding='utf-8-sig')
+            st.download_button(
+                label="📥 Descargar CSV",
+                data=csv,
+                file_name='usuarios_api.csv',
+                mime='text/csv'
+            )
+        else:
+            st.warning("⚠️ La respuesta JSON está vacía.")
     else:
-        st.warning("⚠️ La respuesta JSON está vacía.")
+        st.warning("⚠️ La respuesta está vacía.")
 
 except requests.exceptions.RequestException as e:
     st.error(f"❌ Error durante la solicitud: {e}")
 except ValueError as e:
-    st.error(f"❌ Error al procesar JSON: {e}")
+    st.error(f"❌ Error al procesar JSON: {e}")N: {e}")
