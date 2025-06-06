@@ -129,106 +129,36 @@ try:
     if data:
         df = pd.json_normalize(data)
 
-        st.subheader("✅ Tabla de Usuarios")
-        st.dataframe(df, use_container_width=True)
+        # ... (todo el código que procesa y filtra df)
 
-        # Descargar CSV
-        csv = df.to_csv(index=False, encoding='utf-8-sig')
-        st.download_button(
-            label="📥 Descargar todos los datos como CSV",
-            data=csv,
-            file_name='usuarios_api.csv',
-            mime='text/csv'
-        )
+        # Aquí va el código de la columna 'FECHA HECHO':
+        fecha_col = 'FECHA HECHO'
 
-        # Filtros si existen las columnas necesarias
-        if 'genero' in df.columns:
-            generos = df['genero'].dropna().unique().tolist()
-            genero_filtrado = st.multiselect("🔘 Filtrar por género:", generos, default=generos)
-            df = df[df['genero'].isin(genero_filtrado)]
+        if fecha_col in df.columns:
+            st.write("🔍 Ejemplos de valores en la columna 'FECHA HECHO':")
+            st.write(df[fecha_col].dropna().unique()[:10])
 
-        if 'edad' in df.columns:
-            edad_min = int(df['edad'].min())
-            edad_max = int(df['edad'].max())
-            edad_range = st.slider("📏 Rango de edad:", min_value=edad_min, max_value=edad_max,
-                                   value=(edad_min, edad_max))
-            df = df[(df['edad'] >= edad_range[0]) & (df['edad'] <= edad_range[1])]
+            try:
+                df[fecha_col] = pd.to_datetime(df[fecha_col], errors='coerce', dayfirst=True)
+                df_fecha = df[df[fecha_col].notna()]
 
-        st.markdown("---")
-
-        # Columnas para mostrar múltiples gráficos en una fila
-        col1, col2 = st.columns(2)
-
-        # 📊 Gráfico de barras por género
-        if 'genero' in df.columns:
-            with col1:
-                st.subheader("👥 Usuarios por Género")
-                fig_gen = px.bar(
-                    df['genero'].value_counts().reset_index(),
-                    x='index',
-                    y='genero',
-                    labels={'index': 'Género', 'genero': 'Cantidad'},
-                    color='index',
-                    title='Distribución de Géneros'
-                )
-                st.plotly_chart(fig_gen, use_container_width=True)
-
-        # 🥧 Pie chart de género
-        if 'genero' in df.columns:
-            with col2:
-                st.subheader("🧁 Porcentaje por Género")
-                fig_pie = px.pie(
-                    df,
-                    names='genero',
-                    title='Porcentaje de Usuarios por Género',
-                    hole=0.4
-                )
-                st.plotly_chart(fig_pie, use_container_width=True)
-
-        # 📈 Histograma de edades
-        if 'edad' in df.columns:
-            st.subheader("📈 Histograma de Edades")
-            fig_hist = px.histogram(
-                df,
-                x='edad',
-                nbins=10,
-                title='Distribución de Edades',
-                labels={'edad': 'Edad'},
-                color_discrete_sequence=['#00BFC4']
-            )
-            st.plotly_chart(fig_hist, use_container_width=True)
-
-        # 🌐 Dispersión edad vs. fecha (si hay campo fecha)
-        # 🌐 Dispersión edad vs. fecha: intentamos usar la columna 'FECHA HECHO'
-fecha_col = 'FECHA HECHO'
-
-if fecha_col in df.columns:
-    st.write("🔍 Ejemplos de valores en la columna 'FECHA HECHO':")
-    st.write(df[fecha_col].dropna().unique()[:10])
-
-    try:
-        df[fecha_col] = pd.to_datetime(df[fecha_col], errors='coerce', dayfirst=True)
-        df_fecha = df[df[fecha_col].notna()]
-
-        if not df_fecha.empty:
-            st.subheader(f"🕒 Edad vs. {fecha_col}")
-            fig_scatter = px.scatter(
-                df_fecha,
-                x=fecha_col,
-                y='edad',
-                color='genero' if 'genero' in df.columns else None,
-                title='Relación entre Edad y Fecha',
-                labels={'edad': 'Edad', fecha_col: 'Fecha'}
-            )
-            st.plotly_chart(fig_scatter, use_container_width=True)
+                if not df_fecha.empty:
+                    st.subheader(f"🕒 Edad vs. {fecha_col}")
+                    fig_scatter = px.scatter(
+                        df_fecha,
+                        x=fecha_col,
+                        y='edad',
+                        color='genero' if 'genero' in df.columns else None,
+                        title='Relación entre Edad y Fecha',
+                        labels={'edad': 'Edad', fecha_col: 'Fecha'}
+                    )
+                    st.plotly_chart(fig_scatter, use_container_width=True)
+                else:
+                    st.warning(f"⚠️ Ninguna fila contiene una fecha válida en '{fecha_col}'.")
+            except Exception as e:
+                st.error(f"❌ No se pudo procesar la columna '{fecha_col}' como fecha: {e}")
         else:
-            st.warning(f"⚠️ Ninguna fila contiene una fecha válida en '{fecha_col}'.")
-
-    except Exception as e:
-        st.error(f"❌ No se pudo procesar la columna '{fecha_col}' como fecha: {e}")
-else:
-    st.info("ℹ️ No se encontró una columna llamada 'FECHA HECHO' en los datos.")
-
+            st.info("ℹ️ No se encontró una columna llamada 'FECHA HECHO' en los datos.")
     else:
         st.warning("⚠️ La respuesta JSON está vacía.")
 
@@ -238,6 +168,7 @@ except ValueError as e:
     st.error(f"❌ Error al procesar JSON: {e}")
 except Exception as e:
     st.error(f"❌ Error inesperado: {e}")
+
 
 st.header("Descripción de la Actividad")
 
