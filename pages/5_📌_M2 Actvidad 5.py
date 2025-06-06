@@ -200,27 +200,28 @@ try:
             st.plotly_chart(fig_hist, use_container_width=True)
 
         # 🌐 Dispersión edad vs. fecha (si hay campo fecha)
-        fecha_col = None
-        for col in df.columns:
-            if 'fecha' in col.lower():
-                fecha_col = col
-                break
+if fecha_col:
+    try:
+        df[fecha_col] = pd.to_datetime(df[fecha_col], errors='coerce')
+        df_fecha = df[df[fecha_col].notna()]
 
-        if fecha_col:
-            try:
-                df[fecha_col] = pd.to_datetime(df[fecha_col])
-                st.subheader(f"🕒 Edad vs. {fecha_col.capitalize()}")
-                fig_scatter = px.scatter(
-                    df,
-                    x=fecha_col,
-                    y='edad',
-                    color='genero' if 'genero' in df.columns else None,
-                    title='Relación entre Edad y Fecha',
-                    labels={'edad': 'Edad', fecha_col: 'Fecha'}
-                )
-                st.plotly_chart(fig_scatter, use_container_width=True)
-            except Exception:
-                st.warning(f"No se pudo procesar la columna de fecha: {fecha_col}")
+        if not df_fecha.empty:
+            st.subheader(f"🕒 Edad vs. {fecha_col.capitalize()}")
+            fig_scatter = px.scatter(
+                df_fecha,
+                x=fecha_col,
+                y='edad',
+                color='genero' if 'genero' in df.columns else None,
+                title='Relación entre Edad y Fecha',
+                labels={'edad': 'Edad', fecha_col: 'Fecha'}
+            )
+            st.plotly_chart(fig_scatter, use_container_width=True)
+        else:
+            st.warning(f"La columna '{fecha_col}' no contiene fechas válidas para graficar.")
+
+    except Exception:
+        st.warning(f"No se pudo procesar la columna de fecha: {fecha_col}")
+
 
     else:
         st.warning("⚠️ La respuesta JSON está vacía.")
