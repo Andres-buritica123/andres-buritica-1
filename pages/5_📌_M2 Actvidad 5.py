@@ -123,21 +123,17 @@ st.title("📊 Consulta de usuarios desde API en la nube")
 url = "https://api-b56e.onrender.com/users"
 
 try:
-    # Realizamos la solicitud GET
     response = requests.get(url)
     response.raise_for_status()
-
-    # Procesamos la respuesta
     data = response.json()
+
     if data:
-        # Normalizamos los datos (por si hay campos anidados)
         df = pd.json_normalize(data)
-        
-        # Mostramos todos los datos en una tabla
-        st.subheader("✅ Todos los usuarios recibidos:")
+
+        st.subheader("✅ Tabla de Usuarios")
         st.dataframe(df, use_container_width=True)
 
-        # Botón para descargar el CSV completo
+        # Descargar CSV
         csv = df.to_csv(index=False, encoding='utf-8-sig')
         st.download_button(
             label="📥 Descargar todos los datos como CSV",
@@ -145,6 +141,87 @@ try:
             file_name='usuarios_api.csv',
             mime='text/csv'
         )
+
+        # Filtros si existen las columnas necesarias
+        if 'genero' in df.columns:
+            generos = df['genero'].dropna().unique().tolist()
+            genero_filtrado = st.multiselect("🔘 Filtrar por género:", generos, default=generos)
+            df = df[df['genero'].isin(genero_filtrado)]
+
+        if 'edad' in df.columns:
+            edad_min = int(df['edad'].min())
+            edad_max = int(df['edad'].max())
+            edad_range = st.slider("📏 Rango de edad:", min_value=edad_min, max_value=edad_max,
+                                   value=(edad_min, edad_max))
+            df = df[(df['edad'] >= edad_range[0]) & (df['edad'] <= edad_range[1])]
+
+        st.markdown("---")
+
+        # Columnas para mostrar múltiples gráficos en una fila
+        col1, col2 = st.columns(2)
+
+        # 📊 Gráfico de barras por género
+        if 'genero' in df.columns:
+            with col1:
+                st.subheader("👥 Usuarios por Género")
+                fig_gen = px.bar(
+                    df['genero'].value_counts().reset_index(),
+                    x='index',
+                    y='genero',
+                    labels={'index': 'Género', 'genero': 'Cantidad'},
+                    color='index',
+                    title='Distribución de Géneros'
+                )
+                st.plotly_chart(fig_gen, use_container_width=True)
+
+        # 🥧 Pie chart de género
+        if 'genero' in df.columns:
+            with col2:
+                st.subheader("🧁 Porcentaje por Género")
+                fig_pie = px.pie(
+                    df,
+                    names='genero',
+                    title='Porcentaje de Usuarios por Género',
+                    hole=0.4
+                )
+                st.plotly_chart(fig_pie, use_container_width=True)
+
+        # 📈 Histograma de edades
+        if 'edad' in df.columns:
+            st.subheader("📈 Histograma de Edades")
+            fig_hist = px.histogram(
+                df,
+                x='edad',
+                nbins=10,
+                title='Distribución de Edades',
+                labels={'edad': 'Edad'},
+                color_discrete_sequence=['#00BFC4']
+            )
+            st.plotly_chart(fig_hist, use_container_width=True)
+
+        # 🌐 Dispersión edad vs. fecha (si hay campo fecha)
+        fecha_col = None
+        for col in df.columns:
+            if 'fecha' in col.lower():
+                fecha_col = col
+                break
+
+        if fecha_col:
+            try:
+                df[fecha_col] = pd.to_datetime(df[fecha_col])
+                st.subheader(f"🕒 Edad vs. {fecha_col.capitalize()}")
+                fig_scatter = px.scatter(
+                    df,
+                    x=fecha_col,
+                    y='edad',
+                    color='genero' if 'genero' in df.columns else None,
+                    title='Relación entre Edad y Fecha',
+                    labels={'edad': 'Edad', fecha_col: 'Fecha'}
+                )
+                st.plotly_chart(fig_scatter, use_container_width=True)
+            except Exception:
+                st.warning(f"No se pudo procesar la columna de fecha: {fecha_col}")
+
     else:
         st.warning("⚠️ La respuesta JSON está vacía.")
 
