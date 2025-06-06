@@ -3,10 +3,12 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 import requests
-import openai
 
 # Configuración de la página
-st.set_page_config(page_icon="📌", layout="wide")
+st.set_page_config(   
+    page_icon="📌",
+    layout="wide"
+)
 
 st.title("Momento 2 - Actividad 5")
 
@@ -121,44 +123,30 @@ st.title("📊 Consulta de usuarios desde API en la nube")
 
 # URL de la API
 url = "https://api-b56e.onrender.com/users"
+
 try:
+    # Realizamos la solicitud GET
     response = requests.get(url)
     response.raise_for_status()
+
+    # Procesamos la respuesta
     data = response.json()
-
     if data:
+        # Normalizamos los datos (por si hay campos anidados)
         df = pd.json_normalize(data)
+        
+        # Mostramos todos los datos en una tabla
+        st.subheader("✅ Todos los usuarios recibidos:")
+        st.dataframe(df, use_container_width=True)
 
-        # ... (todo el código que procesa y filtra df)
-
-        # Aquí va el código de la columna 'FECHA HECHO':
-        fecha_col = 'FECHA HECHO'
-
-        if fecha_col in df.columns:
-            st.write("🔍 Ejemplos de valores en la columna 'FECHA HECHO':")
-            st.write(df[fecha_col].dropna().unique()[:10])
-
-            try:
-                df[fecha_col] = pd.to_datetime(df[fecha_col], errors='coerce', dayfirst=True)
-                df_fecha = df[df[fecha_col].notna()]
-
-                if not df_fecha.empty:
-                    st.subheader(f"🕒 Edad vs. {fecha_col}")
-                    fig_scatter = px.scatter(
-                        df_fecha,
-                        x=fecha_col,
-                        y='edad',
-                        color='genero' if 'genero' in df.columns else None,
-                        title='Relación entre Edad y Fecha',
-                        labels={'edad': 'Edad', fecha_col: 'Fecha'}
-                    )
-                    st.plotly_chart(fig_scatter, use_container_width=True)
-                else:
-                    st.warning(f"⚠️ Ninguna fila contiene una fecha válida en '{fecha_col}'.")
-            except Exception as e:
-                st.error(f"❌ No se pudo procesar la columna '{fecha_col}' como fecha: {e}")
-        else:
-            st.info("ℹ️ No se encontró una columna llamada 'FECHA HECHO' en los datos.")
+        # Botón para descargar el CSV completo
+        csv = df.to_csv(index=False, encoding='utf-8-sig')
+        st.download_button(
+            label="📥 Descargar todos los datos como CSV",
+            data=csv,
+            file_name='usuarios_api.csv',
+            mime='text/csv'
+        )
     else:
         st.warning("⚠️ La respuesta JSON está vacía.")
 
@@ -168,66 +156,3 @@ except ValueError as e:
     st.error(f"❌ Error al procesar JSON: {e}")
 except Exception as e:
     st.error(f"❌ Error inesperado: {e}")
-
-
-st.header("Descripción de la Actividad")
-
-st.markdown("""
-Esta actividad consiste en el desarrollo de una **aplicación web con Streamlit** que interactúa con el modelo de lenguaje **ChatGPT (OpenAI API)**.  
-El objetivo principal es permitir que los usuarios ingresen preguntas o temas y reciban respuestas generadas automáticamente por la inteligencia artificial de OpenAI.  
-Se emplean herramientas del ecosistema Python para integrar servicios de IA en una interfaz web amigable:
-
-- `openai` para la comunicación con la API de OpenAI  
-- `Streamlit` para crear una interfaz interactiva sin necesidad de conocimientos avanzados de desarrollo web  
-""")
-
-st.header("Objetivos de Aprendizaje")
-
-st.markdown("""
-- Comprender cómo interactuar con un modelo de lenguaje de IA usando la API de OpenAI  
-- Aprender a construir una aplicación web funcional y ligera con Streamlit  
-- Gestionar entradas del usuario y mostrar respuestas generadas dinámicamente  
-- Aplicar buenas prácticas en el manejo de claves API y errores en llamadas a servicios externos  
-- Explorar el potencial del procesamiento de lenguaje natural en aplicaciones reales  
-""")
-
-st.header("Solución")
-
-# Configuración de la página
-st.title("💬 Chat con ChatGPT")
-st.markdown("Ingresa un tema o pregunta y obtén una respuesta generada por la IA de OpenAI.")
-
-# Campo para la clave de API
-api_key = st.text_input("🔑 Ingresa tu API Key de OpenAI:", type="password")
-
-# Campo de entrada del usuario
-prompt = st.text_input("✍️ Escribe tu pregunta o tema:", placeholder="Ej. ¿Cómo funciona la inteligencia artificial?")
-enviar = st.button("Generar Respuesta")
-
-# Función para generar respuesta con OpenAI
-def generar_respuesta(prompt, api_key):
-    if not prompt:
-        return "Por favor, escribe una pregunta o tema."
-    if not api_key:
-        return "Debes ingresar tu API key."
-
-    try:
-        openai.api_key = api_key
-        respuesta = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
-        )
-        return respuesta.choices[0].message.content
-    except Exception as e:
-        return f"❌ Error: {str(e)}"
-
-# Mostrar respuesta si se presiona el botón
-if enviar and prompt:
-    with st.spinner("🔄 Generando respuesta..."):
-        respuesta = generar_respuesta(prompt, api_key)
-        st.subheader("📢 Respuesta:")
-        st.markdown(respuesta)
-else:
-    st.info("Escribe una pregunta y haz clic en Generar Respuesta.")
