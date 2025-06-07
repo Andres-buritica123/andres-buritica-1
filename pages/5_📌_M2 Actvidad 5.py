@@ -160,52 +160,54 @@ except Exception as e:
 
 # Sección 3: Gemini IA (solo sobre trata de personas)
 
-st.header("🤖 Consulta IA sobre el archivo de trata de personas")
+st.title("🤖 Consulta con Gemini (Gratuito) sobre Trata de Personas")
 
-api_key = st.text_input("🔑 Clave API de Gemini:", type="password", value="AIzaSyCC36tvjh-iJIsyOUur4d1o78O_Cj1W8ig")
-pregunta = st.text_area("✍️ Escribe tu pregunta relacionada con el archivo")
+# Cargar archivo CSV
+df = pd.read_csv("./pages/trata_de_personas.csv")
+
+# Mostrar los datos cargados
+st.dataframe(df)
+
+# Textarea para que el usuario haga una pregunta
+st.subheader("Haz una pregunta sobre los datos")
+user_question = st.text_area("Escribe tu pregunta aquí:")
+
+# Tu clave API de Gemini (NO la compartas públicamente)
+api_key = "AIzaSyCC36tvjh-iJIsyOUur4d1o78O_Cj1W8ig"  # Usa tu clave aquí
+
+# Preparar el contexto del archivo
+df_context = df.head(30).to_string(index=False)
 
 if st.button("Consultar IA"):
-    if not api_key or not pregunta:
-        st.warning("Por favor, ingresa la clave y la pregunta.")
-    elif not api_key.startswith("AIza"):
-        st.error("🚫 La API Key de Gemini no es válida. Debe comenzar con 'AIza'.")
+    if not user_question.strip():
+        st.warning("Escribe una pregunta antes de continuar.")
     else:
         try:
-            ejemplo_csv = df.head(10).to_csv(index=False)
-            prompt = f"""
-Eres una IA experta en análisis de datos. Solo debes responder preguntas relacionadas con este archivo de trata de personas en Colombia. 
-Si la pregunta no está relacionada, responde: "No puedo responder eso porque no está relacionado con el archivo."
+            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.0:generateContent?key={api_key}"
 
-Aquí tienes las primeras filas del archivo:
-{ejemplo_csv}
+            prompt = f"""Responde únicamente preguntas relacionadas con los siguientes datos de trata de personas en Colombia:
 
-PREGUNTA: {pregunta}
+{df_context}
+
+Pregunta del usuario: {user_question}
+
+Si la pregunta no tiene relación con los datos, responde: "Lo siento, solo puedo responder preguntas relacionadas con el archivo de trata de personas".
 """
 
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}"
             headers = {"Content-Type": "application/json"}
-            data = {
-                "contents": [
-                    {
-                        "parts": [{"text": prompt}]
-                    }
-                ]
+            body = {
+                "contents": [{"parts": [{"text": prompt}]}]
             }
 
-            response = requests.post(url, headers=headers, json=data)
+            response = requests.post(url, headers=headers, json=body)
             response.raise_for_status()
             result = response.json()
-            respuesta = result["candidates"][0]["content"]["parts"][0]["text"]
 
-            st.success("✅ Respuesta de Gemini:")
-            st.write(respuesta)
+            respuesta = result['candidates'][0]['content']['parts'][0]['text']
+            st.success("Respuesta de Gemini:")
+            st.markdown(respuesta)
 
-        except requests.exceptions.HTTPError as e:
+        except requests.exceptions.RequestException as e:
             st.error(f"❌ Error al consultar Gemini: {e}")
-            try:
-                st.json(response.json())
-            except:
-                pass
         except Exception as e:
             st.error(f"❌ Error inesperado: {e}")
