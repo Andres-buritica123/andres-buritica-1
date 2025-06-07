@@ -157,39 +157,37 @@ except ValueError as e:
 except Exception as e:
     st.error(f"❌ Error inesperado: {e}")
 
-
+# Sección 3: Gemini IA (solo sobre trata de personas)
 
 st.header("🤖 Asistente IA sobre Trata de Personas (usando Gemini)")
 
 api_key = st.text_input("🔑 Clave API de Gemini:", type="password")
-
 user_question = st.text_area("🧠 Pregunta sobre los datos de trata de personas:")
 
-# Leer el CSV y convertirlo en contexto para la IA
+# Leer el archivo CSV como texto
 try:
     with open("./pages/trata_de_personas.csv", "r", encoding="utf-8") as f:
         csv_data = f.read()
 except FileNotFoundError:
-    st.error("❌ Archivo de datos no encontrado. Asegúrate de que exista 'trata_de_personas.csv' en la carpeta ./pages/")
+    st.error("❌ Archivo de datos no encontrado.")
     csv_data = None
 
-# Función para consultar Gemini
+# Función para llamar a Gemini
 def consultar_gemini(api_key, pregunta, contexto):
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}"
     }
 
-    # Prompt para limitar el contexto
     prompt = f"""
-    Eres un asistente experto en analizar datos de trata de personas en Colombia.
-    Solo puedes responder preguntas basándote estrictamente en los siguientes datos CSV:
-    ---INICIO DE DATOS---
-    {contexto[:15000]}  # Truncamos para que no exceda el límite de tokens
-    ---FIN DE DATOS---
-    
-    Pregunta del usuario: {pregunta}
-    """
+Eres un asistente experto en analizar datos de trata de personas en Colombia.
+Solo puedes responder preguntas basándote estrictamente en los siguientes datos CSV:
+---INICIO DE DATOS---
+{contexto[:15000]}
+---FIN DE DATOS---
+
+Pregunta del usuario: {pregunta}
+"""
 
     payload = {
         "contents": [
@@ -209,11 +207,13 @@ def consultar_gemini(api_key, pregunta, contexto):
     except Exception as e:
         return f"❌ Error al consultar Gemini: {e}"
 
-# Ejecutar si todo está disponible
-if st.button("Consultar IA") and api_key and user_question and csv_data:
+# Ejecutar consulta a Gemini
+consultar = st.button("Consultar IA")
+
+if consultar and api_key and user_question and csv_data:
     with st.spinner("Consultando a Gemini..."):
         respuesta = consultar_gemini(api_key, user_question, csv_data)
         st.markdown("### 💬 Respuesta de Gemini:")
         st.markdown(respuesta)
-elif st.button("Consultar IA"):
+elif consultar:
     st.warning("⚠️ Debes ingresar la clave API, una pregunta y tener el archivo CSV disponible.")
