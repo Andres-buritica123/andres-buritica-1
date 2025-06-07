@@ -159,23 +159,33 @@ except Exception as e:
 
 # Sección 3: Gemini IA (solo sobre trata de personas)
 
-st.subheader("🤖 Consulta con IA (solo sobre el archivo de trata de personas)")
+st.header("🤖 Consulta IA sobre el archivo de trata de personas")
 
 api_key = st.text_input("🔑 Clave API de Gemini:", type="password")
-pregunta = st.text_area("✍️ Escribe tu pregunta sobre el archivo de trata de personas")
+pregunta = st.text_area("✍️ Escribe tu pregunta relacionada con el archivo")
 
 if st.button("Consultar IA"):
     if not api_key or not pregunta:
-        st.warning("🔔 Por favor, ingresa la clave y la pregunta.")
+        st.warning("Por favor, ingresa la clave y la pregunta.")
     else:
         try:
+            # Convertimos las primeras filas del CSV a texto para darle contexto a Gemini
+            ejemplo_csv = df.head(10).to_csv(index=False)
+
+            prompt = f"""
+Solo responde preguntas relacionadas con los datos de trata de personas en Colombia.
+
+Estos son ejemplos de los datos del archivo CSV:
+{ejemplo_csv}
+
+PREGUNTA DEL USUARIO: {pregunta}
+
+Si la pregunta no tiene relación con los datos, responde: "No puedo responder eso porque no está relacionado con el archivo."
+"""
+
             url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}"
             headers = {"Content-Type": "application/json"}
-            prompt = f"""
-Responde SOLO con base en el archivo de trata de personas en Colombia. Si la pregunta no está relacionada, responde: 'No puedo responder eso.'
 
-PREGUNTA: {pregunta}
-"""
             data = {
                 "contents": [
                     {
@@ -184,10 +194,11 @@ PREGUNTA: {pregunta}
                 ]
             }
 
-            response = requests.post(url, headers=headers, json=data)
+            response = requests.post(url, headers=headers, data=json.dumps(data))
             response.raise_for_status()
+
             result = response.json()
-            respuesta = result['candidates'][0]['content']['parts'][0]['text']
+            respuesta = result["candidates"][0]["content"]["parts"][0]["text"]
             st.success("✅ Respuesta de Gemini:")
             st.write(respuesta)
 
