@@ -169,7 +169,7 @@ if st.button("Consultar IA"):
         st.warning("🔔 Por favor, ingresa la clave y la pregunta.")
     else:
         try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0:generateContent?key={api_key}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}"
             headers = {"Content-Type": "application/json"}
             prompt = f"""
 Responde SOLO con base en el archivo de trata de personas en Colombia. Si la pregunta no está relacionada, responde: 'No puedo responder eso.'
