@@ -162,31 +162,29 @@ except Exception as e:
 
 st.header("🤖 Consulta IA sobre el archivo de trata de personas")
 
-api_key = st.text_input("🔑 Clave API de Gemini:", type="password")
+api_key = st.text_input("🔑 Clave API de Gemini:", type="password", value="AIzaSyCC36tvjh-iJIsyOUur4d1o78O_Cj1W8ig")
 pregunta = st.text_area("✍️ Escribe tu pregunta relacionada con el archivo")
 
 if st.button("Consultar IA"):
     if not api_key or not pregunta:
         st.warning("Por favor, ingresa la clave y la pregunta.")
+    elif not api_key.startswith("AIza"):
+        st.error("🚫 La API Key de Gemini no es válida. Debe comenzar con 'AIza'.")
     else:
         try:
-            # Convertimos las primeras filas del CSV a texto para darle contexto a Gemini
             ejemplo_csv = df.head(10).to_csv(index=False)
-
             prompt = f"""
-Solo responde preguntas relacionadas con los datos de trata de personas en Colombia.
+Eres una IA experta en análisis de datos. Solo debes responder preguntas relacionadas con este archivo de trata de personas en Colombia. 
+Si la pregunta no está relacionada, responde: "No puedo responder eso porque no está relacionado con el archivo."
 
-Estos son ejemplos de los datos del archivo CSV:
+Aquí tienes las primeras filas del archivo:
 {ejemplo_csv}
 
-PREGUNTA DEL USUARIO: {pregunta}
-
-Si la pregunta no tiene relación con los datos, responde: "No puedo responder eso porque no está relacionado con el archivo."
+PREGUNTA: {pregunta}
 """
 
             url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}"
             headers = {"Content-Type": "application/json"}
-
             data = {
                 "contents": [
                     {
@@ -195,15 +193,19 @@ Si la pregunta no tiene relación con los datos, responde: "No puedo responder e
                 ]
             }
 
-            response = requests.post(url, headers=headers, data=json.dumps(data))
+            response = requests.post(url, headers=headers, json=data)
             response.raise_for_status()
-
             result = response.json()
             respuesta = result["candidates"][0]["content"]["parts"][0]["text"]
+
             st.success("✅ Respuesta de Gemini:")
             st.write(respuesta)
 
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.HTTPError as e:
             st.error(f"❌ Error al consultar Gemini: {e}")
+            try:
+                st.json(response.json())
+            except:
+                pass
         except Exception as e:
             st.error(f"❌ Error inesperado: {e}")
