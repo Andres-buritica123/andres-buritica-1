@@ -183,7 +183,7 @@ if st.button("Consultar IA"):
         st.warning("Escribe una pregunta antes de continuar.")
     else:
         try:
-            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.0:generateContent?key={api_key}"
+            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key={api_key}"
 
             prompt = f"""Responde únicamente preguntas relacionadas con los siguientes datos de trata de personas en Colombia:
 
