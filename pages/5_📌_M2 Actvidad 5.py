@@ -161,7 +161,7 @@ except Exception as e:
 
 st.header("🤖 Asistente IA sobre Trata de Personas (usando Gemini)")
 
-api_key = st.text_input("AIzaSyCC36tvjh-iJIsyOUur4d1o78O_Cj1W8ig", type="password")
+api_key = st.text_input("🔑 Clave API de Gemini:", type="password")
 user_question = st.text_area("🧠 Pregunta sobre los datos de trata de personas:")
 
 # Leer el archivo CSV como texto
@@ -197,7 +197,7 @@ Pregunta del usuario: {pregunta}
         ]
     }
 
-   url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0:generateContent"
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0:generateContent"
 
     try:
         response = requests.post(url, headers=headers, json=payload)
