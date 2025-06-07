@@ -156,3 +156,64 @@ except ValueError as e:
     st.error(f"❌ Error al procesar JSON: {e}")
 except Exception as e:
     st.error(f"❌ Error inesperado: {e}")
+
+
+
+st.header("🤖 Asistente IA sobre Trata de Personas (usando Gemini)")
+
+api_key = st.text_input("🔑 Clave API de Gemini:", type="password")
+
+user_question = st.text_area("🧠 Pregunta sobre los datos de trata de personas:")
+
+# Leer el CSV y convertirlo en contexto para la IA
+try:
+    with open("./pages/trata_de_personas.csv", "r", encoding="utf-8") as f:
+        csv_data = f.read()
+except FileNotFoundError:
+    st.error("❌ Archivo de datos no encontrado. Asegúrate de que exista 'trata_de_personas.csv' en la carpeta ./pages/")
+    csv_data = None
+
+# Función para consultar Gemini
+def consultar_gemini(api_key, pregunta, contexto):
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
+
+    # Prompt para limitar el contexto
+    prompt = f"""
+    Eres un asistente experto en analizar datos de trata de personas en Colombia.
+    Solo puedes responder preguntas basándote estrictamente en los siguientes datos CSV:
+    ---INICIO DE DATOS---
+    {contexto[:15000]}  # Truncamos para que no exceda el límite de tokens
+    ---FIN DE DATOS---
+    
+    Pregunta del usuario: {pregunta}
+    """
+
+    payload = {
+        "contents": [
+            {
+                "parts": [{"text": prompt}]
+            }
+        ]
+    }
+
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0:generateContent"
+
+    try:
+        response = requests.post(url, headers=headers, json=payload)
+        response.raise_for_status()
+        data = response.json()
+        return data['candidates'][0]['content']['parts'][0]['text']
+    except Exception as e:
+        return f"❌ Error al consultar Gemini: {e}"
+
+# Ejecutar si todo está disponible
+if st.button("Consultar IA") and api_key and user_question and csv_data:
+    with st.spinner("Consultando a Gemini..."):
+        respuesta = consultar_gemini(api_key, user_question, csv_data)
+        st.markdown("### 💬 Respuesta de Gemini:")
+        st.markdown(respuesta)
+elif st.button("Consultar IA"):
+    st.warning("⚠️ Debes ingresar la clave API, una pregunta y tener el archivo CSV disponible.")
