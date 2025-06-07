@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 import requests
+import json
 
 # Configuración de la página
 st.set_page_config(   
