@@ -161,7 +161,7 @@ except Exception as e:
 
 st.header("🤖 Asistente IA sobre Trata de Personas (usando Gemini)")
 
-api_key = st.text_input("🔑 Clave API de Gemini:", type="password")
+api_key = st.text_input("AIzaSyCC36tvjh-iJIsyOUur4d1o78O_Cj1W8ig", type="password")
 user_question = st.text_area("🧠 Pregunta sobre los datos de trata de personas:")
 
 # Leer el archivo CSV como texto
