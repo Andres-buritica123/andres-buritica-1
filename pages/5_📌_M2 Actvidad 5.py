@@ -197,7 +197,7 @@ Pregunta del usuario: {pregunta}
         ]
     }
 
-    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0:generateContent"
+   url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0:generateContent"
 
     try:
         response = requests.post(url, headers=headers, json=payload)
