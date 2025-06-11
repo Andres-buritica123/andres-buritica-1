@@ -5,6 +5,7 @@ import plotly.express as px
 from datetime import datetime
 import requests
 import json
+import google.generativeai as genai
 
 # ✅ Configuración de la página (esto debe ir al principio)
 st.set_page_config(
