@@ -149,49 +149,49 @@ except ValueError as e:
 except Exception as e:
     st.error(f"❌ Error inesperado: {e}")
 
-# Configura la clave de API de Gemini
-# Configurar API Key desde los secretos
-genai.configure(api_key=st.secrets["AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss"])
+
+# Configurar clave directamente (bajo tu propio riesgo)
+genai.configure(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")
 
 # Título
 st.title("💬 Chat con Gemini y datos de Trata de Personas")
+st.markdown("Haz preguntas sobre los datos. Ejemplo: '¿Cuántos casos hubo en Bogotá en 2006?'")
 
-# Cargar el archivo CSV
+# Cargar archivo
 try:
-    df = pd.read_csv("pages/trata_de_personas.csv")
-    df.columns = df.columns.str.upper()  # Asegurar nombres en mayúsculas
-    df["FECHA HECHO"] = pd.to_datetime(df["FECHA HECHO"], errors="coerce")
+    df = pd.read_csv("./pages/trata_de_personas.csv")
+    df.columns = df.columns.str.lower()  # Asegura nombres en minúsculas
+    df['fecha hecho'] = pd.to_datetime(df['fecha hecho'], errors='coerce')
 except Exception as e:
     st.error(f"No se pudo cargar el archivo: {e}")
     st.stop()
 
-# Mostrar todos los datos
-with st.expander("📋 Ver todos los datos"):
+# Mostrar DataFrame completo
+with st.expander("📊 Ver todos los datos"):
     st.dataframe(df)
 
-# Entrada del usuario
-pregunta = st.text_input("Escribe tu pregunta:", placeholder="¿Cuántos casos hubo en Bogotá en 2006?")
-enviar = st.button("Generar respuesta")
-
-# Función para armar contexto
+# Función de contexto
 def construir_contexto(df):
-    resumen = f"Tengo {len(df)} registros sobre trata de personas en Colombia.\n"
-    resumen += f"Columnas: {', '.join(df.columns)}\n"
-    resumen += f"Departamentos únicos: {', '.join(df['DEPARTAMENTO'].dropna().unique()[:5])}...\n"
+    resumen = f"Tengo {len(df)} registros de trata de personas en Colombia.\n"
+    resumen += f"Columnas: {', '.join(df.columns)}.\n"
+    resumen += f"Departamentos únicos: {', '.join(df['departamento'].dropna().unique()[:5])}...\n"
     return resumen
 
-# Generar respuesta con Gemini
-def generar_respuesta(pregunta):
+# Función para generar respuesta
+def generar_respuesta(prompt):
     contexto = construir_contexto(df)
-    prompt_completo = contexto + f"\n\nPregunta del usuario:\n{pregunta}\n\nUsa los datos para dar una respuesta cuantitativa si es posible."
-    
-    model = genai.GenerativeModel("gemini-1.5-flash")
-    respuesta = model.generate_content(prompt_completo)
-    return respuesta.text
+    full_prompt = contexto + "\n\nPregunta del usuario:\n" + prompt
+    try:
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(full_prompt)
+        return response.text
+    except Exception as e:
+        return f"Error al generar respuesta: {str(e)}"
 
-# Ejecutar respuesta
-if enviar and pregunta:
-    with st.spinner("🧠 Generando respuesta con Gemini..."):
+# Entrada del usuario
+pregunta = st.text_input("Escribe tu pregunta:", placeholder="¿Cuántos casos hubo en Antioquia en 2020?")
+if st.button("Generar respuesta") and pregunta:
+    with st.spinner("Consultando a Gemini..."):
         respuesta = generar_respuesta(pregunta)
         st.subheader("🧾 Respuesta de Gemini:")
         st.markdown(respuesta)
