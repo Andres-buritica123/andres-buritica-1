@@ -5,7 +5,6 @@ import plotly.express as px
 from datetime import datetime
 import requests
 import json
-import google.generativeai as genai
 
 # ✅ Configuración de la página (esto debe ir al principio)
 st.set_page_config(
@@ -149,66 +148,34 @@ except ValueError as e:
 except Exception as e:
     st.error(f"❌ Error inesperado: {e}")
 
-# ------------------------------
-# 🔐 Configurar clave de Gemini
-# ------------------------------
-genai.configure(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")  # Considera moverlo a st.secrets por seguridad
+import streamlit as st
+from google import genai
 
-# ------------------------------
-# 🧠 Función de contexto para Gemini
-# ------------------------------
-def construir_contexto(df):
-    resumen = f"Tengo {len(df)} registros de trata de personas en Colombia.\n"
-    resumen += f"Columnas: {', '.join(df.columns)}.\n"
-    resumen += f"Departamentos únicos: {', '.join(df['departamento'].dropna().unique()[:5])}...\n"
-    return resumen
+st.title("💬 Chat con Gemini")
+st.markdown("Ingresa un tema o pregunta para obtener una respuesta generada por Gemini.")
 
-# ------------------------------
-# ✨ Generar respuesta desde Gemini
-# ------------------------------
+# Interfaz de usuario
+prompt = st.text_input("Escribe tu pregunta o tema:", placeholder="Ej. Explica cómo funciona la IA en pocas palabras")
+enviar = st.button("Generar Respuesta")
+
+# Función que usa el código original
 def generar_respuesta(prompt):
-    contexto = construir_contexto(df)
-    full_prompt = contexto + "\n\nPregunta del usuario:\n" + prompt
+    if not prompt:
+        return "Por favor, ingresa un tema o pregunta."
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content(full_prompt)
-        return response.text
+        client = genai.Client(api_key="YOUR_API_KEY")  # Código original
+        response = client.models.generate_content(
+            model="gemini-2.0-flash", contents=prompt  # Código original con prompt dinámico
+        )
+        return response.text  # Código original
     except Exception as e:
-        return f"❌ Error al generar respuesta: {str(e)}"
+        return f"Error: {str(e)}"
 
-# ------------------------------
-# 📊 Interfaz principal Streamlit
-# ------------------------------
-st.title("💬 Chat con Gemini y datos de Trata de Personas")
-st.markdown("Haz preguntas como: *'¿Cuántos casos hubo en Bogotá en 2006?'* o *'¿Qué departamentos tienen más casos?'*")
-
-# ------------------------------
-# 📁 Cargar CSV y preparar datos
-# ------------------------------
-try:
-    df = pd.read_csv("./pages/trata_de_personas.csv")
-    df.columns = df.columns.str.lower()  # Columnas en minúscula
-    df['fecha hecho'] = pd.to_datetime(df['fecha hecho'], errors='coerce')
-
-    # Asegurarse de que los textos estén en mayúscula (si el CSV ya está en mayúscula, esto es seguro)
-    if 'departamento' in df.columns:
-        df['departamento'] = df['departamento'].astype(str).str.upper()
-except Exception as e:
-    st.error(f"❌ No se pudo cargar el archivo: {e}")
-    st.stop()
-
-# ------------------------------
-# 🔍 Ver DataFrame
-# ------------------------------
-with st.expander("📋 Ver todos los datos"):
-    st.dataframe(df)
-
-# ------------------------------
-# 💬 Entrada del usuario
-# ------------------------------
-pregunta = st.text_input("✍️ Escribe tu pregunta:", placeholder="¿Cuántos casos hubo en Antioquia en 2020?")
-if st.button("Generar respuesta") and pregunta:
-    with st.spinner("⏳ Consultando a Gemini..."):
-        respuesta = generar_respuesta(pregunta)
-        st.subheader("🧾 Respuesta de Gemini:")
+# Lógica principal
+if enviar and prompt:
+    with st.spinner("Generando respuesta..."):
+        respuesta = generar_respuesta(prompt)
+        st.subheader("Respuesta:")
         st.markdown(respuesta)
+else:
+    st.info("Escribe un tema o pregunta y haz clic en Generar Respuesta.")
