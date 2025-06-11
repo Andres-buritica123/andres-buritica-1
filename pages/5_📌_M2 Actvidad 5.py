@@ -160,7 +160,7 @@ genai.configure(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")  # 👈 Puede
 def construir_contexto(df):
     resumen = f"Tengo {len(df)} registros de trata de personas en Colombia.\n"
     resumen += f"Columnas: {', '.join(df.columns)}.\n"
-    resumen += f"Departamentos únicos: {', '.join(df['departamento'].dropna().unique()[:5])}...\n"
+    resumen += f"Departamentos únicos: {', '.join(df['DEPARTAMENTO'].dropna().unique()[:5])}...\n"
     return resumen
 
 # ------------------------------
@@ -186,7 +186,7 @@ st.markdown("Haz preguntas como: *'¿Cuántos casos hubo en Bogotá en 2006?'* o
 try:
     df = pd.read_csv("./pages/trata_de_personas.csv")
     df.columns = df.columns.str.lower()
-    df['fecha hecho'] = pd.to_datetime(df['fecha hecho'], errors='coerce')
+    df['FECHA HECHO'] = pd.to_datetime(df['FECHA HECHO'], errors='coerce')
 except Exception as e:
     st.error(f"❌ No se pudo cargar el archivo: {e}")
     st.stop()
