@@ -156,7 +156,7 @@ st.markdown("Haz preguntas sobre los datos de trata de personas en Colombia. Eje
 
 # Cargar el archivo CSV
 try:
-    df = pd.read_csv("/mnt/data/trata_de_personas.csv")  # Ruta del archivo subido
+    df = pd.read_csv("./pages/trata_de_personas.csv")  # Ruta del archivo subido
     df['fecha hecho'] = pd.to_datetime(df['fecha hecho'], errors='coerce')
 except Exception as e:
     st.error(f"No se pudo cargar el archivo: {e}")
@@ -183,7 +183,7 @@ def generar_respuesta(prompt):
     contexto = construir_contexto(df)
     full_prompt = contexto + "\n\nPregunta del usuario:\n" + prompt
     try:
-        client = genai.Client(api_key="TU_API_KEY_GEMINI")
+        client = genai.Client(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")
         response = client.models.generate_content(
             model="gemini-1.5-flash", contents=full_prompt
         )
