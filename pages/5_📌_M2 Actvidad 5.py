@@ -149,30 +149,53 @@ except Exception as e:
     st.error(f"❌ Error inesperado: {e}")
 
 # -----------------------------
-# 🧩 Parte 3: Chat con Gemini
+# 🧩 Parte 3: Chat con Gemini + contexto CSV
 # -----------------------------
 st.title("💬 Chat con Gemini")
-st.markdown("Ingresa un tema o pregunta para obtener una respuesta generada por Gemini.")
+st.markdown("Consulta información relacionada con casos de trata de personas en Colombia, usando IA.")
 
-prompt = st.text_input("Escribe tu pregunta o tema:", placeholder="Ej. Explica cómo funciona la IA en pocas palabras")
+# --- Leer archivo CSV ---
+try:
+    df_contexto = pd.read_csv("./pages/trata_de_personas.csv")
+    df_contexto.columns = df_contexto.columns.str.strip().str.upper()
+    df_contexto['FECHA HECHO'] = pd.to_datetime(df_contexto['FECHA HECHO'], errors='coerce')
+    df_contexto['AÑO'] = df_contexto['FECHA HECHO'].dt.year
+
+    # Extraer contexto del CSV
+    total_casos = int(df_contexto['CANTIDAD'].sum())
+    top_departamentos = df_contexto.groupby('DEPARTAMENTO')['CANTIDAD'].sum().sort_values(ascending=False).head(3)
+
+    contexto = f"""Contexto: El archivo trata_de_personas.csv contiene registros de casos de trata de personas en Colombia. 
+    Se han reportado un total de {total_casos} casos. Los departamentos con mayor cantidad de reportes son: 
+    {', '.join(top_departamentos.index)}."""
+
+except Exception as e:
+    contexto = "No se pudo cargar el archivo de datos para el contexto."
+    st.error("❌ Error al cargar el archivo CSV para el contexto del chat.")
+
+# --- Interfaz de usuario ---
+prompt = st.text_input("Escribe tu pregunta o tema:", placeholder="Ej. ¿Cuántos casos hay por año?")
 enviar = st.button("Generar Respuesta")
 
-def generar_respuesta(prompt):
+# --- Función con contexto ---
+def generar_respuesta(prompt, contexto):
     if not prompt:
         return "Por favor, ingresa un tema o pregunta."
     try:
         client = genai.Client(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")
+        prompt_completo = f"{contexto}\n\nPregunta del usuario: {prompt}"
         response = client.models.generate_content(
-            model="gemini-2.0-flash", contents=prompt
+            model="gemini-2.0-flash", contents=prompt_completo
         )
         return response.text
     except Exception as e:
         return f"Error: {str(e)}"
 
+# --- Generar respuesta si se presiona el botón ---
 if enviar and prompt:
     with st.spinner("Generando respuesta..."):
-        respuesta = generar_respuesta(prompt)
+        respuesta = generar_respuesta(prompt, contexto)
         st.subheader("Respuesta:")
         st.markdown(respuesta)
 else:
-    st.info("Escribe un tema o pregunta y haz clic en Generar Respuesta.")
+    st.info("Escribe una pregunta relacionada con los datos de trata de personas y haz clic en 'Generar Respuesta'.")
