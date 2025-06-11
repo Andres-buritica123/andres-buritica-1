@@ -152,7 +152,7 @@ except Exception as e:
 # 🧩 Parte 3: Chat con Gemini + contexto CSV
 # -----------------------------
 # Cargar y procesar el archivo CSV
-df = pd.read_csv("trata_de_personas.csv")
+df = pd.read_csv("./pages/trata_de_personas.csv")
 df.dropna(subset=['DEPARTAMENTO', 'MUNICIPIO', 'DESCRIPCION CONDUCTA', 'CANTIDAD'], inplace=True)
 df['FECHA HECHO'] = pd.to_datetime(df['FECHA HECHO'], errors='coerce')
 df['AÑO'] = df['FECHA HECHO'].dt.year
@@ -177,7 +177,7 @@ def generar_respuesta_con_contexto(pregunta):
     """
 
     try:
-        client = genai.Client(api_key="TU_API_KEY")  # ⚠️ Reemplaza por tu propia API Key
+        client = genai.Client(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")  # ⚠️ Reemplaza por tu propia API Key
         response = client.models.generate_content(
             model="gemini-2.0-flash",
             contents=f"""Contexto:\n{resumen_contexto}\n\nPregunta:\n{pregunta}"""
