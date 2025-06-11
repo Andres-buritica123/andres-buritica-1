@@ -148,33 +148,39 @@ except ValueError as e:
 except Exception as e:
     st.error(f"❌ Error inesperado: {e}")
 
-# -----------------------------
-# 🧩 Parte 3: Chat con Gemini
-# -----------------------------
 st.title("💬 Chat con Gemini y datos de Trata de Personas")
 st.markdown("Haz preguntas sobre los datos de trata de personas en Colombia. Ejemplo: '¿Cuántos casos hubo en Bogotá en 2006?'")
 
 # Cargar el archivo CSV
 try:
     df = pd.read_csv("./pages/trata_de_personas.csv")  # Ruta del archivo subido
-    df['fecha hecho'] = pd.to_datetime(df['fecha hecho'], errors='coerce')
+    df.columns = df.columns.str.upper()  # Convertir todas las columnas a mayúsculas
 except Exception as e:
-    st.error(f"No se pudo cargar el archivo: {e}")
+    st.error(f"❌ No se pudo cargar el archivo: {e}")
+    st.stop()
+
+# Verificar si la columna 'FECHA HECHO' existe
+if 'FECHA HECHO' in df.columns:
+    df['FECHA HECHO'] = pd.to_datetime(df['FECHA HECHO'], errors='coerce')
+else:
+    st.error("❌ La columna 'FECHA HECHO' no se encuentra en el archivo.")
     st.stop()
 
 # Mostrar parte del DataFrame si el usuario lo desea
-with st.expander("Ver datos cargados"):
+with st.expander("📊 Ver datos cargados"):
     st.dataframe(df.head())
 
 # Entrada del usuario
-prompt_usuario = st.text_input("Escribe tu pregunta:", placeholder="¿Cuántos casos hubo en Antioquia en 2020?")
+prompt_usuario = st.text_input("🗣️ Escribe tu pregunta:", placeholder="¿Cuántos casos hubo en Antioquia en 2020?")
 enviar = st.button("Generar respuesta")
 
 # Crear resumen de los datos como contexto para Gemini
 def construir_contexto(df):
     resumen = f"Tengo un conjunto de datos con {len(df)} registros sobre trata de personas en Colombia.\n"
-    resumen += f"Las columnas incluyen: {', '.join(df.columns)}.\n"
-    resumen += f"Los departamentos únicos son: {', '.join(df['departamento'].dropna().unique()[:5])}...\n"
+    resumen += f"Las columnas disponibles son: {', '.join(df.columns)}.\n"
+    if 'DEPARTAMENTO' in df.columns:
+        departamentos = ', '.join(df['DEPARTAMENTO'].dropna().unique()[:5])
+        resumen += f"Ejemplos de departamentos incluidos: {departamentos}...\n"
     resumen += "Puedes usar estos datos para responder preguntas estadísticas, comparativas o de resumen.\n"
     return resumen
 
@@ -183,17 +189,17 @@ def generar_respuesta(prompt):
     contexto = construir_contexto(df)
     full_prompt = contexto + "\n\nPregunta del usuario:\n" + prompt
     try:
-        client = genai.Client(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")
+        client = genai.Client(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")  # ⚠️ Reemplaza con tu clave real
         response = client.models.generate_content(
             model="gemini-1.5-flash", contents=full_prompt
         )
         return response.text
     except Exception as e:
-        return f"Error al generar respuesta: {str(e)}"
+        return f"❌ Error al generar respuesta: {str(e)}"
 
 # Procesar
 if enviar and prompt_usuario:
-    with st.spinner("Generando respuesta con Gemini..."):
+    with st.spinner("🧠 Generando respuesta con Gemini..."):
         respuesta = generar_respuesta(prompt_usuario)
-        st.subheader("Respuesta de Gemini:")
+        st.subheader("🧾 Respuesta de Gemini:")
         st.markdown(respuesta)
