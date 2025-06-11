@@ -149,48 +149,51 @@ except Exception as e:
     st.error(f"❌ Error inesperado: {e}")
 
 # -----------------------------
-# 🧩 Parte 3: Chat con Gemini + contexto CSV
+# 🧩 Parte 3: Chat con Gemini
 # -----------------------------
-# Cargar y procesar el archivo CSV
-df = pd.read_csv("./pages/trata_de_personas.csv")
-df.dropna(subset=['DEPARTAMENTO', 'MUNICIPIO', 'DESCRIPCION CONDUCTA', 'CANTIDAD'], inplace=True)
-df['FECHA HECHO'] = pd.to_datetime(df['FECHA HECHO'], errors='coerce')
-df['AÑO'] = df['FECHA HECHO'].dt.year
+st.title("💬 Chat con Gemini y datos de Trata de Personas")
+st.markdown("Haz preguntas sobre los datos de trata de personas en Colombia. Ejemplo: '¿Cuántos casos hubo en Bogotá en 2006?'")
 
-# Título e instrucciones
-st.title("💬 Chat con Gemini sobre Trata de Personas")
-st.markdown("Consulta datos sobre trata de personas en Colombia usando lenguaje natural.")
+# Cargar el archivo CSV
+try:
+    df = pd.read_csv("/mnt/data/trata_de_personas.csv")  # Ruta del archivo subido
+    df['fecha hecho'] = pd.to_datetime(df['fecha hecho'], errors='coerce')
+except Exception as e:
+    st.error(f"No se pudo cargar el archivo: {e}")
+    st.stop()
 
-# Campo de entrada
-prompt = st.text_input("Escribe tu pregunta sobre los datos:", placeholder="Ej. ¿Cuántos casos hubo en Bogotá en 2010?")
-enviar = st.button("Generar Respuesta")
+# Mostrar parte del DataFrame si el usuario lo desea
+with st.expander("Ver datos cargados"):
+    st.dataframe(df.head())
 
-# Función para generar contexto y llamar a Gemini
-def generar_respuesta_con_contexto(pregunta):
-    # Resumen básico del contexto para inyectar a Gemini
-    resumen_contexto = f"""
-    Los datos provienen de un archivo CSV con casos de trata de personas en Colombia.
-    Se incluyen columnas como fecha, departamento, municipio, delito y cantidad de casos.
-    Hay registros entre los años {int(df['AÑO'].min())} y {int(df['AÑO'].max())}.
-    Departamentos más frecuentes: {', '.join(df['DEPARTAMENTO'].value_counts().head(5).index)}.
-    Ejemplo de delitos: {', '.join(df['DESCRIPCION CONDUCTA'].value_counts().head(2).index)}.
-    """
+# Entrada del usuario
+prompt_usuario = st.text_input("Escribe tu pregunta:", placeholder="¿Cuántos casos hubo en Antioquia en 2020?")
+enviar = st.button("Generar respuesta")
 
+# Crear resumen de los datos como contexto para Gemini
+def construir_contexto(df):
+    resumen = f"Tengo un conjunto de datos con {len(df)} registros sobre trata de personas en Colombia.\n"
+    resumen += f"Las columnas incluyen: {', '.join(df.columns)}.\n"
+    resumen += f"Los departamentos únicos son: {', '.join(df['departamento'].dropna().unique()[:5])}...\n"
+    resumen += "Puedes usar estos datos para responder preguntas estadísticas, comparativas o de resumen.\n"
+    return resumen
+
+# Generar respuesta con Gemini
+def generar_respuesta(prompt):
+    contexto = construir_contexto(df)
+    full_prompt = contexto + "\n\nPregunta del usuario:\n" + prompt
     try:
-        client = genai.Client(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")  # ⚠️ Reemplaza por tu propia API Key
+        client = genai.Client(api_key="TU_API_KEY_GEMINI")
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=f"""Contexto:\n{resumen_contexto}\n\nPregunta:\n{pregunta}"""
+            model="gemini-1.5-flash", contents=full_prompt
         )
         return response.text
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"Error al generar respuesta: {str(e)}"
 
-# Ejecutar si se presiona el botón
-if enviar and prompt:
-    with st.spinner("Generando respuesta..."):
-        respuesta = generar_respuesta_con_contexto(prompt)
-        st.subheader("Respuesta:")
+# Procesar
+if enviar and prompt_usuario:
+    with st.spinner("Generando respuesta con Gemini..."):
+        respuesta = generar_respuesta(prompt_usuario)
+        st.subheader("Respuesta de Gemini:")
         st.markdown(respuesta)
-else:
-    st.info("Escribe una pregunta y haz clic en Generar Respuesta.")
