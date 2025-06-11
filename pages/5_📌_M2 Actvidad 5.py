@@ -149,35 +149,23 @@ except ValueError as e:
 except Exception as e:
     st.error(f"❌ Error inesperado: {e}")
 
+# ------------------------------
+# 🔐 Configurar clave directamente (bajo tu propio riesgo)
+# ------------------------------
+genai.configure(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")  # 👈 Puedes ocultarla con st.secrets si quieres
 
-# Configurar clave directamente (bajo tu propio riesgo)
-genai.configure(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")
-
-# Título
-st.title("💬 Chat con Gemini y datos de Trata de Personas")
-st.markdown("Haz preguntas sobre los datos. Ejemplo: '¿Cuántos casos hubo en Bogotá en 2006?'")
-
-# Cargar archivo
-try:
-    df = pd.read_csv("./pages/trata_de_personas.csv")
-    df.columns = df.columns.str.lower()  # Asegura nombres en minúsculas
-    df['fecha hecho'] = pd.to_datetime(df['fecha hecho'], errors='coerce')
-except Exception as e:
-    st.error(f"No se pudo cargar el archivo: {e}")
-    st.stop()
-
-# Mostrar DataFrame completo
-with st.expander("📊 Ver todos los datos"):
-    st.dataframe(df)
-
-# Función de contexto
+# ------------------------------
+# 🧠 Función de contexto para Gemini
+# ------------------------------
 def construir_contexto(df):
     resumen = f"Tengo {len(df)} registros de trata de personas en Colombia.\n"
     resumen += f"Columnas: {', '.join(df.columns)}.\n"
     resumen += f"Departamentos únicos: {', '.join(df['departamento'].dropna().unique()[:5])}...\n"
     return resumen
 
-# Función para generar respuesta
+# ------------------------------
+# ✨ Generar respuesta desde Gemini
+# ------------------------------
 def generar_respuesta(prompt):
     contexto = construir_contexto(df)
     full_prompt = contexto + "\n\nPregunta del usuario:\n" + prompt
@@ -186,12 +174,31 @@ def generar_respuesta(prompt):
         response = model.generate_content(full_prompt)
         return response.text
     except Exception as e:
-        return f"Error al generar respuesta: {str(e)}"
+        return f"❌ Error al generar respuesta: {str(e)}"
+
+# ------------------------------
+# 📊 Interfaz principal Streamlit
+# ------------------------------
+st.title("💬 Chat con Gemini y datos de Trata de Personas")
+st.markdown("Haz preguntas como: *'¿Cuántos casos hubo en Bogotá en 2006?'* o *'¿Qué departamentos tienen más casos?'*")
+
+# Cargar CSV
+try:
+    df = pd.read_csv("./pages/trata_de_personas.csv")
+    df.columns = df.columns.str.lower()
+    df['fecha hecho'] = pd.to_datetime(df['fecha hecho'], errors='coerce')
+except Exception as e:
+    st.error(f"❌ No se pudo cargar el archivo: {e}")
+    st.stop()
+
+# Mostrar todo el DataFrame
+with st.expander("📋 Ver todos los datos"):
+    st.dataframe(df)
 
 # Entrada del usuario
-pregunta = st.text_input("Escribe tu pregunta:", placeholder="¿Cuántos casos hubo en Antioquia en 2020?")
+pregunta = st.text_input("✍️ Escribe tu pregunta:", placeholder="¿Cuántos casos hubo en Antioquia en 2020?")
 if st.button("Generar respuesta") and pregunta:
-    with st.spinner("Consultando a Gemini..."):
+    with st.spinner("⏳ Consultando a Gemini..."):
         respuesta = generar_respuesta(pregunta)
         st.subheader("🧾 Respuesta de Gemini:")
         st.markdown(respuesta)
