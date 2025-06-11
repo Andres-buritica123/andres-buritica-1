@@ -160,7 +160,7 @@ genai.configure(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")  # 👈 Puede
 def construir_contexto(df):
     resumen = f"Tengo {len(df)} registros de trata de personas en Colombia.\n"
     resumen += f"Columnas: {', '.join(df.columns)}.\n"
-    resumen += f"Departamentos únicos: {', '.join(df['DEPARTAMENTO'].dropna().unique()[:5])}...\n"
+    resumen += f"Departamentos únicos: {', '.join(df['departamento'].dropna().unique()[:5])}...\n"
     return resumen
 
 # ------------------------------
