@@ -148,39 +148,37 @@ except ValueError as e:
 except Exception as e:
     st.error(f"❌ Error inesperado: {e}")
 
+# Configura la clave de API de Gemini
+genai.configure(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")  # 👈 Reemplaza esto con tu clave real
+
+# -----------------------------
+# 🧩 Parte 3: Chat con Gemini
+# -----------------------------
 st.title("💬 Chat con Gemini y datos de Trata de Personas")
 st.markdown("Haz preguntas sobre los datos de trata de personas en Colombia. Ejemplo: '¿Cuántos casos hubo en Bogotá en 2006?'")
 
 # Cargar el archivo CSV
 try:
-    df = pd.read_csv("./pages/trata_de_personas.csv")  # Ruta del archivo subido
-    df.columns = df.columns.str.upper()  # Convertir todas las columnas a mayúsculas
-except Exception as e:
-    st.error(f"❌ No se pudo cargar el archivo: {e}")
-    st.stop()
-
-# Verificar si la columna 'FECHA HECHO' existe
-if 'FECHA HECHO' in df.columns:
+    df = pd.read_csv("./pages/trata_de_personas.csv")  # Asegúrate que el archivo esté en esa ruta
+    df.columns = df.columns.str.upper()  # Convertir nombres de columnas a mayúsculas por consistencia
     df['FECHA HECHO'] = pd.to_datetime(df['FECHA HECHO'], errors='coerce')
-else:
-    st.error("❌ La columna 'FECHA HECHO' no se encuentra en el archivo.")
+except Exception as e:
+    st.error(f"No se pudo cargar el archivo: {e}")
     st.stop()
 
-# Mostrar parte del DataFrame si el usuario lo desea
-with st.expander("📊 Ver datos cargados"):
+# Mostrar todo el DataFrame si el usuario lo desea
+with st.expander("📄 Ver todos los datos cargados"):
     st.dataframe(df)
 
 # Entrada del usuario
-prompt_usuario = st.text_input("🗣️ Escribe tu pregunta:", placeholder="¿Cuántos casos hubo en Antioquia en 2020?")
-enviar = st.button("Generar respuesta")
+prompt_usuario = st.text_input("✏️ Escribe tu pregunta:", placeholder="¿Cuántos casos hubo en Antioquia en 2020?")
+enviar = st.button("🔍 Generar respuesta")
 
 # Crear resumen de los datos como contexto para Gemini
 def construir_contexto(df):
     resumen = f"Tengo un conjunto de datos con {len(df)} registros sobre trata de personas en Colombia.\n"
-    resumen += f"Las columnas disponibles son: {', '.join(df.columns)}.\n"
-    if 'DEPARTAMENTO' in df.columns:
-        departamentos = ', '.join(df['DEPARTAMENTO'].dropna().unique()[:5])
-        resumen += f"Ejemplos de departamentos incluidos: {departamentos}...\n"
+    resumen += f"Las columnas incluyen: {', '.join(df.columns)}.\n"
+    resumen += f"Los departamentos únicos son: {', '.join(df['DEPARTAMENTO'].dropna().unique()[:5])}...\n"
     resumen += "Puedes usar estos datos para responder preguntas estadísticas, comparativas o de resumen.\n"
     return resumen
 
@@ -189,16 +187,19 @@ def generar_respuesta(prompt):
     contexto = construir_contexto(df)
     full_prompt = contexto + "\n\nPregunta del usuario:\n" + prompt
     try:
-        client = genai.Client(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")  # ⚠️ Reemplaza con tu clave real
-        response = client.models.generate_content(
-            model="gemini-1.5-flash", contents=full_prompt
-        )
+        client = genai.GenerativeModel("gemini-1.5-flash")
+        chat = client.start_chat()
+        response = chat.send_message(full_prompt)
         return response.text
     except Exception as e:
         return f"❌ Error al generar respuesta: {str(e)}"
 
 # Procesar
 if enviar and prompt_usuario:
+    with st.spinner("⏳ Generando respuesta con Gemini..."):
+        respuesta = generar_respuesta(prompt_usuario)
+        st.subheader("🧾 Respuesta de Gemini:")
+        st.markdown(respuesta)
     with st.spinner("🧠 Generando respuesta con Gemini..."):
         respuesta = generar_respuesta(prompt_usuario)
         st.subheader("🧾 Respuesta de Gemini:")
