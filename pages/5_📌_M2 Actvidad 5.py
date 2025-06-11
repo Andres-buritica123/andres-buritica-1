@@ -1,4 +1,5 @@
 import streamlit as st
+from google import genai
 import pandas as pd
 import plotly.express as px
 from datetime import datetime
@@ -158,56 +159,33 @@ except ValueError as e:
 except Exception as e:
     st.error(f"❌ Error inesperado: {e}")
 
-# Sección 3: Gemini IA (solo sobre trata de personas)
+# Configuración de la página
+st.set_page_config(page_title="Chat Básico con Gemini", layout="centered")
+st.title("💬 Chat con Gemini")
+st.markdown("Ingresa un tema o pregunta para obtener una respuesta generada por Gemini.")
 
-st.title("🤖 Consulta con Gemini (Gratuito) sobre Trata de Personas")
+# Interfaz de usuario
+prompt = st.text_input("Escribe tu pregunta o tema:", placeholder="Ej. Explica cómo funciona la IA en pocas palabras")
+enviar = st.button("Generar Respuesta")
 
-# Cargar archivo CSV
-df = pd.read_csv("./pages/trata_de_personas.csv")
+# Función que usa el código original
+def generar_respuesta(prompt):
+    if not prompt:
+        return "Por favor, ingresa un tema o pregunta."
+    try:
+        client = genai.Client(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")  # Código original
+        response = client.models.generate_content(
+            model="gemini-2.0-flash", contents=prompt  # Código original con prompt dinámico
+        )
+        return response.text  # Código original
+    except Exception as e:
+        return f"Error: {str(e)}"
 
-# Mostrar los datos cargados
-st.dataframe(df)
-
-# Textarea para que el usuario haga una pregunta
-st.subheader("Haz una pregunta sobre los datos")
-user_question = st.text_area("Escribe tu pregunta aquí:")
-
-# Tu clave API de Gemini (NO la compartas públicamente)
-api_key = "AIzaSyCC36tvjh-iJIsyOUur4d1o78O_Cj1W8ig"  # Usa tu clave aquí
-
-# Preparar el contexto del archivo
-df_context = df.head(30).to_string(index=False)
-
-if st.button("Consultar IA"):
-    if not user_question.strip():
-        st.warning("Escribe una pregunta antes de continuar.")
-    else:
-        try:
-            url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key={api_key}"
-
-            prompt = f"""Responde únicamente preguntas relacionadas con los siguientes datos de trata de personas en Colombia:
-
-{df_context}
-
-Pregunta del usuario: {user_question}
-
-Si la pregunta no tiene relación con los datos, responde: "Lo siento, solo puedo responder preguntas relacionadas con el archivo de trata de personas".
-"""
-
-            headers = {"Content-Type": "application/json"}
-            body = {
-                "contents": [{"parts": [{"text": prompt}]}]
-            }
-
-            response = requests.post(url, headers=headers, json=body)
-            response.raise_for_status()
-            result = response.json()
-
-            respuesta = result['candidates'][0]['content']['parts'][0]['text']
-            st.success("Respuesta de Gemini:")
-            st.markdown(respuesta)
-
-        except requests.exceptions.RequestException as e:
-            st.error(f"❌ Error al consultar Gemini: {e}")
-        except Exception as e:
-            st.error(f"❌ Error inesperado: {e}")
+# Lógica principal
+if enviar and prompt:
+    with st.spinner("Generando respuesta..."):
+        respuesta = generar_respuesta(prompt)
+        st.subheader("Respuesta:")
+        st.markdown(respuesta)
+else:
+    st.info("Escribe un tema o pregunta y haz clic en Generar Respuesta.")
