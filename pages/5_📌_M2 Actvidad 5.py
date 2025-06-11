@@ -186,7 +186,7 @@ st.markdown("Haz preguntas como: *'¿Cuántos casos hubo en Bogotá en 2006?'* o
 try:
     df = pd.read_csv("./pages/trata_de_personas.csv")
     df.columns = df.columns.str.lower()
-    df['FECHA HECHO'] = pd.to_datetime(df['FECHA HECHO'], errors='coerce')
+    df['fecha hecho'] = pd.to_datetime(df['FECHA HECHO'], errors='coerce')
 except Exception as e:
     st.error(f"❌ No se pudo cargar el archivo: {e}")
     st.stop()
