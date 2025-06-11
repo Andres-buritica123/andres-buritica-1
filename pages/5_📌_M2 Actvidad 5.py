@@ -150,9 +150,9 @@ except Exception as e:
     st.error(f"❌ Error inesperado: {e}")
 
 # ------------------------------
-# 🔐 Configurar clave directamente (bajo tu propio riesgo)
+# 🔐 Configurar clave de Gemini
 # ------------------------------
-genai.configure(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")  # 👈 Puedes ocultarla con st.secrets si quieres
+genai.configure(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")  # Considera moverlo a st.secrets por seguridad
 
 # ------------------------------
 # 🧠 Función de contexto para Gemini
@@ -182,20 +182,30 @@ def generar_respuesta(prompt):
 st.title("💬 Chat con Gemini y datos de Trata de Personas")
 st.markdown("Haz preguntas como: *'¿Cuántos casos hubo en Bogotá en 2006?'* o *'¿Qué departamentos tienen más casos?'*")
 
-# Cargar CSV
+# ------------------------------
+# 📁 Cargar CSV y preparar datos
+# ------------------------------
 try:
     df = pd.read_csv("./pages/trata_de_personas.csv")
-    df.columns = df.columns.str.lower()
+    df.columns = df.columns.str.lower()  # Columnas en minúscula
     df['fecha hecho'] = pd.to_datetime(df['fecha hecho'], errors='coerce')
+
+    # Asegurarse de que los textos estén en mayúscula (si el CSV ya está en mayúscula, esto es seguro)
+    if 'departamento' in df.columns:
+        df['departamento'] = df['departamento'].astype(str).str.upper()
 except Exception as e:
     st.error(f"❌ No se pudo cargar el archivo: {e}")
     st.stop()
 
-# Mostrar todo el DataFrame
+# ------------------------------
+# 🔍 Ver DataFrame
+# ------------------------------
 with st.expander("📋 Ver todos los datos"):
     st.dataframe(df)
 
-# Entrada del usuario
+# ------------------------------
+# 💬 Entrada del usuario
+# ------------------------------
 pregunta = st.text_input("✍️ Escribe tu pregunta:", placeholder="¿Cuántos casos hubo en Antioquia en 2020?")
 if st.button("Generar respuesta") and pregunta:
     with st.spinner("⏳ Consultando a Gemini..."):
