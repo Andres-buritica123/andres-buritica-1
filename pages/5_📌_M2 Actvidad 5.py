@@ -168,7 +168,7 @@ else:
 
 # Mostrar parte del DataFrame si el usuario lo desea
 with st.expander("📊 Ver datos cargados"):
-    st.dataframe(df.head())
+    st.dataframe(df)
 
 # Entrada del usuario
 prompt_usuario = st.text_input("🗣️ Escribe tu pregunta:", placeholder="¿Cuántos casos hubo en Antioquia en 2020?")
