@@ -163,7 +163,7 @@ def generar_respuesta(prompt):
     if not prompt:
         return "Por favor, ingresa un tema o pregunta."
     try:
-        client = genai.Client(api_key="YOUR_API_KEY")  # Código original
+        client = genai.Client(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")  # Código original
         response = client.models.generate_content(
             model="gemini-2.0-flash", contents=prompt  # Código original con prompt dinámico
         )
