@@ -196,19 +196,8 @@ st.markdown("Pregunta sobre los datos de un CSV cargado desde una URL predefinid
 csv_url_fija = "./pages/trata_de_personas.csv" # Ejemplo de un CSV público
 
 df = None # Inicializa df
-
-st.subheader("1. Cargando CSV desde URL fija...")
-try:
-    df = pd.read_csv(csv_url_fija)
-    st.success(f"CSV cargado exitosamente desde: {csv_url_fija}")
-    st.write("Primeras 5 filas del archivo:")
-    st.dataframe(df.head())
-except Exception as e:
-    st.error(f"Error al cargar el CSV desde la URL fija: {e}. Asegúrate de que la URL es correcta y el archivo es accesible.")
-    df = pd.DataFrame() # Asegurarse de que df esté definido
-
-# --- Parte 2: Interacción con Gemini ---
-st.subheader("2. Haz tu pregunta a Gemini")
+# --- Parte 1: Interacción con Gemini ---
+st.subheader("1. Haz tu pregunta a Gemini")
 prompt_usuario = st.text_input("Escribe tu pregunta o tema:", placeholder="Ej. ¿Cuál fue el PIB de Argentina en 2020?")
 enviar = st.button("Generar Respuesta")
 
