@@ -200,7 +200,7 @@ st.subheader("1. Cargando CSV desde URL fija...")
 try:
     df = pd.read_csv(csv_url_fija)
     st.success(f"CSV cargado exitosamente desde: {csv_url_fija}")
-    st.write("Primeras 5 filas del archivo:")
+    st.write("Información del archivo:")
     st.dataframe(df)
 except Exception as e:
     st.error(f"Error al cargar el CSV desde la URL fija: {e}. Asegúrate de que la URL es correcta y el archivo es accesible.")
