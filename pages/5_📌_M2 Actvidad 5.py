@@ -181,10 +181,6 @@ ax.axis('equal')
 
 st.subheader(f"🧩 Distribución de casos por departamento en {anio_seleccionado}")
 st.pyplot(fig)
-
-# Mostrar tabla opcional
-with st.expander("📋 Ver datos filtrados por año"):
-    st.dataframe(df_filtrado)
     
 # -----------------------------
 # 🧩 Parte 3: API DE GEMINI AI  
