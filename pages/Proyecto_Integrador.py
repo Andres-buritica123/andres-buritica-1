@@ -201,13 +201,13 @@ try:
     df = pd.read_csv(csv_url_fija)
     st.success(f"CSV cargado exitosamente desde: {csv_url_fija}")
     st.write("Primeras 5 filas del archivo:")
-    st.dataframe(df.head())
+    st.dataframe(df)
 except Exception as e:
     st.error(f"Error al cargar el CSV desde la URL fija: {e}. Asegúrate de que la URL es correcta y el archivo es accesible.")
     df = pd.DataFrame() # Asegurarse de que df esté definido
 # --- Parte 2: Interacción con Gemini ---
 st.subheader("2. Haz tu pregunta a Gemini")
-prompt_usuario = st.text_input("Escribe tu pregunta o tema:", placeholder="Ej. ¿Cuál fue el PIB de Argentina en 2020?")
+prompt_usuario = st.text_input("Escribe tu pregunta o tema:", placeholder="Ej. ¿Que casos hubieron en 2008?")
 enviar = st.button("Generar Respuesta")
 
 # Función para interactuar con Gemini (la misma que antes)
