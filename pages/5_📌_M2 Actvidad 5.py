@@ -6,6 +6,7 @@ from datetime import datetime
 import requests
 import json
 import matplotlib.pyplot as plt
+import google.generativeai as genai
 
 # ✅ Configuración de la página (esto debe ir al principio)
 st.set_page_config(
@@ -185,31 +186,60 @@ st.pyplot(fig)
 # -----------------------------
 # 🧩 Parte 3: API DE GEMINI AI  
 # -----------------------------
-st.title("💬 Chat con Gemini")
-st.markdown("Ingresa un tema o pregunta para obtener una respuesta generada por Gemini.")
+genai.configure(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss") # Reemplaza con tu clave real
 
-# Interfaz de usuario
-prompt = st.text_input("Escribe tu pregunta o tema:", placeholder="Ej. Explica cómo funciona la IA en pocas palabras")
+st.title("💬 Chat con Gemini y CSV de URL Fija")
+st.markdown("Pregunta sobre los datos de un CSV cargado desde una URL predefinida.")
+
+# --- Parte 1: Definir la URL del CSV internamente ---
+# Reemplaza esta URL con la de tu propio archivo CSV
+csv_url_fija = "https://api-b56e.onrender.com/users" # Ejemplo de un CSV público
+
+df = None # Inicializa df
+
+st.subheader("1. Cargando CSV desde URL fija...")
+try:
+    df = pd.read_csv(csv_url_fija)
+    st.success(f"CSV cargado exitosamente desde: {csv_url_fija}")
+    st.write("Primeras 5 filas del archivo:")
+    st.dataframe(df.head())
+except Exception as e:
+    st.error(f"Error al cargar el CSV desde la URL fija: {e}. Asegúrate de que la URL es correcta y el archivo es accesible.")
+    df = pd.DataFrame() # Asegurarse de que df esté definido
+
+# --- Parte 2: Interacción con Gemini ---
+st.subheader("2. Haz tu pregunta a Gemini")
+prompt_usuario = st.text_input("Escribe tu pregunta o tema:", placeholder="Ej. ¿Cuál fue el PIB de Argentina en 2020?")
 enviar = st.button("Generar Respuesta")
 
-# Función que usa el código original
-def generar_respuesta(prompt):
-    if not prompt:
+# Función para interactuar con Gemini (la misma que antes)
+def generar_respuesta_con_contexto(prompt_usuario, dataframe):
+    if not prompt_usuario:
         return "Por favor, ingresa un tema o pregunta."
+
+    contexto_csv = ""
+    if not dataframe.empty:
+        contexto_csv = "A continuación, se presenta un fragmento de un archivo CSV:\n\n"
+        contexto_csv += dataframe.to_markdown(index=False)
+        contexto_csv += "\n\nBasándote en esta información y en tus conocimientos, responde a la siguiente pregunta:"
+
+    full_prompt = f"{contexto_csv}\n\nPregunta: {prompt_usuario}"
+
     try:
-        client = genai.Client(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss")  # Código original
-        response = client.models.generate_content(
-            model="gemini-2.0-flash", contents=prompt  # Código original con prompt dinámico
-        )
-        return response.text  # Código original
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(full_prompt)
+        return response.text
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"Error al comunicarse con Gemini: {str(e)}"
 
 # Lógica principal
-if enviar and prompt:
-    with st.spinner("Generando respuesta..."):
-        respuesta = generar_respuesta(prompt)
-        st.subheader("Respuesta:")
-        st.markdown(respuesta)
+if enviar and prompt_usuario:
+    if not df.empty:
+        with st.spinner("Generando respuesta..."):
+            respuesta = generar_respuesta_con_contexto(prompt_usuario, df)
+            st.subheader("Respuesta de Gemini:")
+            st.markdown(respuesta)
+    else:
+        st.warning("No se pudo cargar el CSV desde la URL fija.")
 else:
     st.info("Escribe un tema o pregunta y haz clic en Generar Respuesta.")
