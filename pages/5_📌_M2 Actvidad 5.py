@@ -148,9 +148,46 @@ except ValueError as e:
 except Exception as e:
     st.error(f"❌ Error inesperado: {e}")
 
-import streamlit as st
-from google import genai
+st.title("📊 Visualización de Casos de Trata de Personas por Departamento")
 
+# Cargar CSV con columnas en mayúscula
+try:
+    df = pd.read_csv("./pages/trata_de_personas.csv")
+    df['FECHA HECHO'] = pd.to_datetime(df['FECHA HECHO'], errors='coerce')
+    df['CANTIDAD'] = pd.to_numeric(df['CANTIDAD'], errors='coerce').fillna(0).astype(int)
+    df['DEPARTAMENTO'] = df['DEPARTAMENTO'].astype(str).str.upper()
+except Exception as e:
+    st.error(f"❌ Error al cargar los datos: {e}")
+    st.stop()
+
+# Filtrado dinámico por año
+anios_disponibles = sorted(df['FECHA HECHO'].dt.year.dropna().unique())
+anio_seleccionado = st.selectbox("📅 Selecciona un año", anios_disponibles)
+
+df_filtrado = df[df['FECHA HECHO'].dt.year == anio_seleccionado]
+
+# Agrupación por departamento
+casos_por_departamento = df_filtrado.groupby("DEPARTAMENTO")["CANTIDAD"].sum().sort_values(ascending=False)
+
+# Mostrar gráfico circular con los 5 principales
+top_5 = casos_por_departamento.head(5)
+otros = pd.Series([casos_por_departamento[5:].sum()], index=["OTROS"])
+casos_final = pd.concat([top_5, otros])
+
+fig, ax = plt.subplots()
+ax.pie(casos_final, labels=casos_final.index, autopct='%1.1f%%', startangle=90)
+ax.axis('equal')
+
+st.subheader(f"🧩 Distribución de casos por departamento en {anio_seleccionado}")
+st.pyplot(fig)
+
+# Mostrar tabla opcional
+with st.expander("📋 Ver datos filtrados por año"):
+    st.dataframe(df_filtrado)
+    
+# -----------------------------
+# 🧩 Parte 3: API DE GEMINI AI  
+# -----------------------------
 st.title("💬 Chat con Gemini")
 st.markdown("Ingresa un tema o pregunta para obtener una respuesta generada por Gemini.")
 
