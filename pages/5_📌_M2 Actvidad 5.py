@@ -193,7 +193,7 @@ st.markdown("Pregunta sobre los datos de un CSV cargado desde una URL predefinid
 
 # --- Parte 1: Definir la URL del CSV internamente ---
 # Reemplaza esta URL con la de tu propio archivo CSV
-csv_url_fija = "https://api-b56e.onrender.com/users" # Ejemplo de un CSV público
+csv_url_fija = "./pages/trata_de_personas.csv" # Ejemplo de un CSV público
 
 df = None # Inicializa df
 
