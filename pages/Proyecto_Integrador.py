@@ -271,11 +271,11 @@ ALTO_DESEADO = 200
 
 # Listado de (ruta, nombre) por estudiante
 datos_estudiantes = [
-    ("assets/foto3.jpg", "Andrés Buritica"),
-    ("assets/foto2.jpg", "Andrés Buritica"),
-    ("assets/foto1.jpg", "Andrés Buritica"),
+    ("assets/foto3.jpg", "Duvian Alvarez"),
+    ("assets/foto2.jpg", "Laura Acevedo"),
+    ("assets/foto1.jpg", "Cristian Zapata"),
     ("assets/foto4.jpg", "Andrés Buritica"),
-    ("assets/foto5.jpg", "Andrés Buritica")
+    ("assets/foto5.jpg", "Seabastian Restrepo")
 ]
 
 cols = st.columns(len(datos_estudiantes))
