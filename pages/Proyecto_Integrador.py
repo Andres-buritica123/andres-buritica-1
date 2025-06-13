@@ -271,9 +271,9 @@ ALTO_DESEADO = 200
 
 # Listado de (ruta, nombre) por estudiante
 datos_estudiantes = [
-    ("assets/foto1.jpg", "Andrés Buritica"),
-    ("assets/foto2.jpg", "Andrés Buritica"),
     ("assets/foto3.jpg", "Andrés Buritica"),
+    ("assets/foto2.jpg", "Andrés Buritica"),
+    ("assets/foto1.jpg", "Andrés Buritica"),
     ("assets/foto4.jpg", "Andrés Buritica"),
     ("assets/foto5.jpg", "Andrés Buritica")
 ]
