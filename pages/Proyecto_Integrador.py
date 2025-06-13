@@ -14,6 +14,7 @@ st.set_page_config(
     page_icon="⚙️",
     layout="wide"
 )
+col1, col2 = st.columns([1, 2])
 # Columna izquierda: Foto del estudiante
 with col1:
     st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
