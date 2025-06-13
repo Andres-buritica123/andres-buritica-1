@@ -21,18 +21,18 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
     st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
-    st.markdown('<p style="margin-top: 10px;">Programa: <span style="color: #0066cc; font-weight: bold;">Desarrollo de Software</span></p>', unsafe_allow_html=True)
 # Columna 2
 with col2:
     st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
+    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
 # Columna 3
 with col3:
-    st.markdown('<p>Semestre: <span style="color: #0066cc; font-weight: bold;">2025-1</span></p>', unsafe_allow_html=True)
-
+    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
+    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
 # Columna 4
 with col4:
-    st.markdown('<p>Repositorio: <a href="https://github.com/Andres-buritica123/andres-buritica-1.git" target="_blank" style="color: #0066cc; font-weight: bold; text-decoration: none;">GitHub</a></p>', unsafe_allow_html=True)
-
+    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
+    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
 # -----------------------------
 # 🧩 Parte 1: Estructuras de Datos
 # -----------------------------
