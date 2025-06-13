@@ -269,20 +269,20 @@ st.title("Integrantes: ")
 col1, col2, col3, col4, col5 = st.columns(5)
 # Columna 1
 with col1:
-    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
+    st.image("assets/foto1.jpg", width=200, caption="Estudiante", output_format="JPEG")
     st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
 # Columna 2
 with col2:
-    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
+    st.image("assets/foto2.jpg", width=200, caption="Estudiante", output_format="JPEG")
     st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
 # Columna 3
 with col3:
-    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
+    st.image("assets/foto3.jpg", width=200, caption="Estudiante", output_format="JPEG")
     st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
 # Columna 4
 with col4:
-    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
+    st.image("assets/foto4.jpg", width=200, caption="Estudiante", output_format="JPEG")
     st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
 with col5:
-    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
+    st.image("assets/foto5.jpg", width=200, caption="Estudiante", output_format="JPEG")
     st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
