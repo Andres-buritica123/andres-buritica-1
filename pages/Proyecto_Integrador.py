@@ -11,7 +11,7 @@ import google.generativeai as genai
 # ✅ Configuración de la página (esto debe ir al principio)
 st.set_page_config(
     page_title="Poryecto Integrador",
-    page_icon="🧑‍💼",
+    page_icon="⚙️",
     layout="wide"
 )
 
