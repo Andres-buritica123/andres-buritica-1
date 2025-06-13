@@ -266,23 +266,22 @@ else:
 st.title("Integrantes: ")
 
 # Crear 4 columnas de tamaño igual
-col1, col2, col3, col4, col5 = st.columns(5)
-# Columna 1
-with col1:
-    st.image("assets/foto1.jpg", width=200, caption="Estudiante", output_format="JPEG")
-    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
-# Columna 2
-with col2:
-    st.image("assets/foto2.jpg", width=200, caption="Estudiante", output_format="JPEG")
-    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
-# Columna 3
-with col3:
-    st.image("assets/foto3.jpg", width=200, caption="Estudiante", output_format="JPEG")
-    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
-# Columna 4
-with col4:
-    st.image("assets/foto4.jpg", width=200, caption="Estudiante", output_format="JPEG")
-    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
-with col5:
-    st.image("assets/foto5.jpg", width=200, caption="Estudiante", output_format="JPEG")
-    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
+cols = st.columns(5)
+
+# Datos de ejemplo: ruta de imagen y nombre correspondiente
+datos_estudiantes = [
+    ("assets/foto1.jpg", "Andrés Felipe"),
+    ("assets/foto2.jpg", "María González"),
+    ("assets/foto3.jpg", "Juan Pérez"),
+    ("assets/foto4.jpg", "Lucía Ramírez"),
+    ("assets/foto5.jpg", "Carlos López")
+]
+
+# Mostrar cada imagen con su nombre debajo
+for col, (img_path, nombre) in zip(cols, datos_estudiantes):
+    with col:
+        st.image(img_path, width=200, caption="Estudiante")  # Misma anchura para uniformidad
+        st.markdown(
+            f'<h3 style="color: #0066cc; margin-top: 10px;">{nombre}</h3>',
+            unsafe_allow_html=True
+        )
