@@ -14,25 +14,6 @@ st.set_page_config(
     page_icon="⚙️",
     layout="wide"
 )
-# Crear 4 columnas de tamaño igual
-col1, col2, col3, col4 = st.columns(4)
-
-# Columna 1
-with col1:
-    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
-    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
-# Columna 2
-with col2:
-    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
-    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
-# Columna 3
-with col3:
-    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
-    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
-# Columna 4
-with col4:
-    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
-    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
 # -----------------------------
 # 🧩 Parte 1: Estructuras de Datos
 # -----------------------------
@@ -281,3 +262,27 @@ if enviar and prompt_usuario:
         st.warning("No se pudo cargar el CSV desde la URL fija.")
 else:
     st.info("Escribe un tema o pregunta y haz clic en Generar Respuesta.")
+
+st.title("Integrantes: ")
+
+# Crear 4 columnas de tamaño igual
+col1, col2, col3, col4, col5 = st.columns(5)
+# Columna 1
+with col1:
+    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
+    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
+# Columna 2
+with col2:
+    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
+    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
+# Columna 3
+with col3:
+    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
+    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
+# Columna 4
+with col4:
+    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
+    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
+with col5:
+    st.image("assets/foto.jpg", width=200, caption="Estudiante", output_format="JPEG")
+    st.markdown('<h3 style="color: #0066cc; margin-top: 0px;">Andrés Felipe Buritica Ocampo</h3>', unsafe_allow_html=True)
