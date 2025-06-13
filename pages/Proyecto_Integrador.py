@@ -1,3 +1,4 @@
+from PIL import Image
 import streamlit as st
 from google import genai
 import pandas as pd
@@ -265,10 +266,10 @@ else:
 
 st.title("Integrantes: ")
 
-# Crear 4 columnas de tamaño igual
-cols = st.columns(5)
+# Definir el alto deseado para todas las imágenes
+ALTO_DESEADO = 200
 
-# Datos de ejemplo: ruta de imagen y nombre correspondiente
+# Listado de (ruta, nombre) por estudiante
 datos_estudiantes = [
     ("assets/foto1.jpg", "Andrés Felipe"),
     ("assets/foto2.jpg", "María González"),
@@ -277,11 +278,12 @@ datos_estudiantes = [
     ("assets/foto5.jpg", "Carlos López")
 ]
 
-# Mostrar cada imagen con su nombre debajo
-for col, (img_path, nombre) in zip(cols, datos_estudiantes):
+cols = st.columns(len(datos_estudiantes))
+
+for col, (ruta, nombre) in zip(cols, datos_estudiantes):
     with col:
-        st.image(img_path, width=200, caption="Estudiante")  # Misma anchura para uniformidad
-        st.markdown(
-            f'<h3 style="color: #0066cc; margin-top: 10px;">{nombre}</h3>',
-            unsafe_allow_html=True
-        )
+        img = Image.open(ruta)
+        w, h = img.size
+        nuevo_ancho = int(w * (ALTO_DESEADO / h))
+        img_resized = img.resize((nuevo_ancho, ALTO_DESEADO), Image.LANCZOS)
+        st.image(img_resized, caption=nombre)
