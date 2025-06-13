@@ -19,6 +19,7 @@ st.set_page_config(
 # 🧩 Parte 1: Estructuras de Datos
 # -----------------------------
 st.title("Proyecto Integrador")
+st.title("Actividad 1")
 
 st.header("Descripción de la actividad")
 st.markdown("""
@@ -95,6 +96,8 @@ st.dataframe(df_filtrado.sort_values(by='FECHA HECHO', ascending=False))
 # -----------------------------
 # 🧩 Parte 2: API REST - Usuarios
 # -----------------------------
+st.title("Actividad 2")
+
 st.header("Descripción de la Actividad")
 st.markdown("""
 Esta actividad consiste en el desarrollo de una **aplicación web con Streamlit** que consume datos desde una **API REST gratuita en la nube**.  
@@ -184,6 +187,8 @@ st.pyplot(fig)
 # -----------------------------
 # 🧩 Parte 3: API DE GEMINI AI  
 # -----------------------------
+st.title("Actividad 3")
+
 st.header("Descripción de la actividad")
 st.markdown("""
 Actividad para crear un **chat interactivo en Streamlit** que:
