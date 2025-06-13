@@ -10,35 +10,33 @@ import google.generativeai as genai
 
 # ✅ Configuración de la página (esto debe ir al principio)
 st.set_page_config(
-    page_title="Momento 2 - Actividad 5",
-    page_icon="📌",
+    page_title="Poryecto Integrador",
+    page_icon="🧑‍💼",
     layout="wide"
 )
 
 # -----------------------------
 # 🧩 Parte 1: Estructuras de Datos
 # -----------------------------
-st.title("Momento 2 - Actividad 5")
+st.title("Proyecto Integrador")
 
 st.header("Descripción de la actividad")
 st.markdown("""
-Esta actividad es una **introducción práctica a Python** y a las **estructuras de datos básicas**.  
-Exploraremos los conceptos fundamentales del lenguaje y aprenderemos a utilizar:
-
-- Variables
-- Tipos de datos
-- Operadores
-- Estructuras de datos como listas, tuplas, diccionarios y conjuntos
-
-El enfoque será práctico, con ejemplos reales y útiles para desarrollar una base sólida en programación.
+Actividad para construir un **dashboard interactivo** en Streamlit que:
+- Carga y limpia un CSV con casos de trata de personas.
+- Transforma fechas y extrae el **año**.
+- Genera métricas (casos totales, departamentos, municipios).
+- Aplica filtros dinámicos por **año** y **departamento**.
+- Muestra gráficos y tabla actualizada de los datos.
 """)
 
 st.header("Objetivos de Aprendizaje")
 st.markdown("""
-- Comprender los tipos de datos básicos en Python  
-- Aprender a utilizar variables y operadores  
-- Dominar las estructuras de datos fundamentales  
-- Aplicar estos conocimientos en ejemplos prácticos y ejercicios  
+- Cargar y transformar datos con **Pandas** (fechas, filtros).
+- Calcular métricas clave con agrupaciones.
+- Implementar filtros interactivos en **Streamlit**.
+- Visualizar datos con **Plotly**.
+- Exponer datos limpios en formato de tabla.
 """)
 
 st.header("Solución")
@@ -186,6 +184,25 @@ st.pyplot(fig)
 # -----------------------------
 # 🧩 Parte 3: API DE GEMINI AI  
 # -----------------------------
+st.header("Descripción de la actividad")
+st.markdown("""
+Actividad para crear un **chat interactivo en Streamlit** que:
+- Carga un CSV desde una URL fija (local o pública).
+- Muestra la tabla con los datos.
+- Permite al usuario escribir una pregunta.
+- Envía tanto la pregunta como un extracto del CSV a **Gemini**.
+- Devuelve y muestra la respuesta del modelo basada en los datos.
+""")
+
+st.header("Objetivos de Aprendizaje")
+st.markdown("""
+- Aprender a **cargar y mostrar** datos desde una URL o ruta fija.
+- Implementar entrada de texto y botones para **interacción del usuario**.
+- Construir un **prompt dinámico** que combine datos tabulares y preguntas.
+- Conectar con un modelo de IA (Gemini) para **generar respuestas contextuales**.
+- Presentar la respuesta dentro de la interfaz web.
+""")
+
 genai.configure(api_key="AIzaSyBwfPpP1jSHoTr6vaISCm9jHcCT-4ShQss") # Reemplaza con tu clave real
 
 st.title("💬 Chat con Gemini y CSV de URL Fija")
